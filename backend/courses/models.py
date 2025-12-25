@@ -21,11 +21,23 @@ class Course(models.Model):
 
     credits = models.PositiveIntegerField()
     semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES)
-    academic_year = models.CharField(max_length=9)  
+    academic_year = models.CharField(max_length=9)
 
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def user_has_access(self, user):
+        if not user or not user.is_authenticated:
+            return False
+
+        from subscriptions.models import Subscription
+
+        return Subscription.objects.filter(
+            user=user,
+            course=self,
+            status='active'
+        ).exists()
 
     def __str__(self):
         return f"{self.code} - {self.title}"

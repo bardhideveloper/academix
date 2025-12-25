@@ -1,6 +1,6 @@
 from django.db import models
+from django.utils.timezone import now
 from users.models import User
-from courses.models import Course
 
 
 class Subscription(models.Model):
@@ -17,7 +17,7 @@ class Subscription(models.Model):
     )
 
     course = models.ForeignKey(
-        Course,
+        "courses.Course",
         on_delete=models.CASCADE,
         related_name='subscriptions'
     )
@@ -41,6 +41,15 @@ class Subscription(models.Model):
 
     class Meta:
         unique_together = ('user', 'course')
+
+    def is_valid(self):
+        if self.status != 'active':
+            return False
+
+        if self.end_date and self.end_date < now().date():
+            return False
+
+        return True
 
     def __str__(self):
         return f"{self.user.email} → {self.course.title}"
