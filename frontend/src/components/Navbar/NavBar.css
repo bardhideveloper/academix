@@ -1,0 +1,10 @@
+
+@import '../../styles/variables.css';
+
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid #eee; background: #fff; position: sticky; top: 0; z-index: 10;
+}
+.brand { display: inline-flex; align-items: center; gap: 8px; color: var(--brand-ink); font-weight: 800; }
+.nav__right a { margin-left: 16px; color: var(--ink-2); }
+.nav__right a:hover { color: var(--brand-ink); }

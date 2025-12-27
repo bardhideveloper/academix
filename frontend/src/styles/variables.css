@@ -1,0 +1,12 @@
+
+:root {
+  --brand: #0c7f7f;        
+  --brand-ink: #063f3f;  
+  --accent: #f6c637;       
+  --ink-1: #111827;
+  --ink-2: #374151;
+  --bg: #ffffff;
+  --muted: #6b7280;
+  --radius: 10px;
+  --shadow-1: 0 2px 10px rgba(0,0,0,.06);
+}

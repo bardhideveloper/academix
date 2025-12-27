@@ -1,11 +1,12 @@
+import { useDocumentTitle } from '../lib/useDocumentTitle';
 import { Link } from 'react-router-dom';
-
 export default function NotFound() {
+  useDocumentTitle('AcademiX — Not Found');
   return (
-    <main style={{ padding: 24 }}>
-      <h1>404 - Page not found</h1>
-      <p>The page you are looking for doesn’t exist.</p>
-      <Link to="/">Go back home</Link>
-    </main>
+    <div>
+      <h1>404</h1>
+      <p>Page not found.</p>
+      <Link to="/">Go home</Link>
+    </div>
   );
 }
