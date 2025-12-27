@@ -1,0 +1,15 @@
+<h1>My Courses</h1>
+
+{% if courses %}
+  <ul>
+    {% for course in courses %}
+      <li>
+        <a href="{% url 'courses:course_detail' course.id %}">
+          {{ course.title }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You have no active courses.</p>
+{% endif %}

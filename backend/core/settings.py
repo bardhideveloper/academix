@@ -42,12 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
 
     'users',
     'courses',
     'subscriptions',
     'course_content',
     'progress',
+    'notifications',
+    'wishlist',
+    'inactive_users',
 
 ]
 AUTH_USER_MODEL = "users.User"
@@ -123,6 +127,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = "/courses/my/"
+
 
 
 # Internationalization
@@ -141,3 +147,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+CELERY_BROKER_URL = 'redis://localhost:6380/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6380/1'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Tirane'

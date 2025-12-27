@@ -2,8 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 
-from courses.models import Course
-
+from .models import Course
 
 @login_required
 def course_detail(request, course_id):
@@ -17,3 +16,9 @@ def course_detail(request, course_id):
         "courses/course_detail.html",
         {"course": course}
     )
+
+
+@login_required
+def my_courses(request):
+    courses = Course.objects.filter(users=request.user)
+    return render(request, "courses/my_courses.html", {"courses": courses})

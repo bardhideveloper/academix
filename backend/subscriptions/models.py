@@ -31,12 +31,6 @@ class Subscription(models.Model):
     start_date = models.DateField(auto_now_add=True)
     end_date = models.DateField(null=True, blank=True)
 
-    progress = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        default=0.00
-    )
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
