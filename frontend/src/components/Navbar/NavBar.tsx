@@ -1,11 +1,20 @@
-
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './NavBar.css';
 import logo from '../../assets/academix-logo.png';
+import { useAuth } from '../../features/auth/AuthContext';
+import Button from '../UI/Button';
 
 export default function NavBar() {
+  const { state, logout } = useAuth();
+  const navigate = useNavigate();
+
   const linkStyle = ({ isActive }: { isActive: boolean }) =>
     ({ textDecoration: isActive ? 'underline' : 'none', fontWeight: isActive ? 700 : 500 });
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <nav className="nav">
@@ -19,7 +28,18 @@ export default function NavBar() {
         <NavLink to="/courses" style={linkStyle}>Courses</NavLink>
         <NavLink to="/subscriptions" style={linkStyle}>Subscriptions</NavLink>
         <NavLink to="/progress" style={linkStyle}>Progress</NavLink>
-        <NavLink to="/login" style={linkStyle}>Login</NavLink>
+
+        {state.user ? (
+          <>
+            <span style={{ margin: '0 8px' }}>Hi, {state.user.name ?? state.user.email}</span>
+            <Button variant="outline" size="sm" onClick={handleLogout}>Logout</Button>
+          </>
+        ) : (
+          <>
+            <Button as={Link} to="/login" variant="outline" size="sm">Sign in</Button>
+            <Button as={Link} to="/register" variant="outline" size="sm">Register</Button>
+          </>
+        )}
       </div>
     </nav>
   );
