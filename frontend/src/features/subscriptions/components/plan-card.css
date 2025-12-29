@@ -1,0 +1,29 @@
+.ax-plan {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 340px;     /* tune */
+  max-height: 340px;
+  background: #fff;
+}
+
+.ax-plan__head {
+  flex: 0 0 auto;
+}
+
+.ax-plan__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  border: 1px solid #f3f4f6;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #4b5563;
+}
+
+.ax-plan__foot {
+  flex: 0 0 auto;
+}

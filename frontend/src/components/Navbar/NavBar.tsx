@@ -1,8 +1,10 @@
+
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './NavBar.css';
 import logo from '../../assets/academix-logo.png';
 import { useAuth } from '../../features/auth/AuthContext';
 import Button from '../UI/Button';
+import AlertsBell from '../../features/alerts/components/AlertsBell';
 
 export default function NavBar() {
   const { state, logout } = useAuth();
@@ -24,21 +26,26 @@ export default function NavBar() {
           <span>AcademiX</span>
         </Link>
       </div>
+
       <div className="nav__right">
         <NavLink to="/courses" style={linkStyle}>Courses</NavLink>
         <NavLink to="/subscriptions" style={linkStyle}>Subscriptions</NavLink>
         <NavLink to="/progress" style={linkStyle}>Progress</NavLink>
 
+        <div className="nav__alerts">
+          <AlertsBell />
+        </div>
+
         {state.user ? (
-          <>
-            <span style={{ margin: '0 8px' }}>Hi, {state.user.name ?? state.user.email}</span>
+          <div className="nav__auth">
+            <span className="nav__hello">Hi, {state.user.name ?? state.user.email}</span>
             <Button variant="outline" size="sm" onClick={handleLogout}>Logout</Button>
-          </>
+          </div>
         ) : (
-          <>
+          <div className="nav__auth">
             <Button as={Link} to="/login" variant="outline" size="sm">Sign in</Button>
             <Button as={Link} to="/register" variant="outline" size="sm">Register</Button>
-          </>
+          </div>
         )}
       </div>
     </nav>

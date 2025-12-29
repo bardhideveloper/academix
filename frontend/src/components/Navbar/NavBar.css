@@ -1,10 +1,54 @@
-
 @import '../../styles/variables.css';
 
 .nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 16px; border-bottom: 1px solid #eee; background: #fff; position: sticky; top: 0; z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
-.brand { display: inline-flex; align-items: center; gap: 8px; color: var(--brand-ink); font-weight: 800; }
-.nav__right a { margin-left: 16px; color: var(--ink-2); }
-.nav__right a:hover { color: var(--brand-ink); }
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand-ink);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.nav__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
+
+
+.nav__right a {
+  color: var(--ink-2);
+}
+
+.nav__right a:hover {
+  color: var(--brand-ink);
+}
+
+.nav__alerts {
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav__auth {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav__hello {
+  color: var(--ink-2);
+  margin: 0 4px;
+  font-size: 0.95rem;
+}
