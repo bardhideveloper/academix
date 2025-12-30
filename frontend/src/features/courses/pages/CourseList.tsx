@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { listCourses } from '../services/courses.api';
 import type { Course } from '../types';
@@ -8,7 +7,6 @@ import CourseFilter from '../components/CourseFilter';
 import SkeletonCard from '../../../components/Skeleton/SkeletonCard';
 import { useDocumentTitle } from '../../../lib/useDocumentTitle';
 
-
 export default function CoursesList() {
   useDocumentTitle('AcademiX — Courses');
   const [courses, setCourses] = useState<Course[]>([]);
@@ -16,11 +14,12 @@ export default function CoursesList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    listCourses().then(d => {
-      setCourses(d);
-      setFiltered(d);
-      setLoading(false);
-    });
+    listCourses()
+      .then(d => {
+        setCourses(d);
+        setFiltered(d);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -33,16 +32,23 @@ export default function CoursesList() {
       ) : (
         <>
           <CourseFilter courses={courses} onChange={setFiltered} />
-          <div className="grid">
-            {filtered.map(c => (
-              <Link key={c.id} to={`/courses/${c.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <CourseCard course={c} />
-              </Link>
-            ))}
-          </div>
+          {filtered.length === 0 ? (
+            <p style={{ opacity: 0.7 }}>No courses match your filters.</p>
+          ) : (
+            <div className="grid">
+              {filtered.map(c => (
+                <Link
+                  key={c.id}
+                  to={`/courses/${c.id}`}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <CourseCard course={c} />
+                </Link>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>
   );
 }
-

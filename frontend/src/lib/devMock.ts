@@ -65,6 +65,30 @@ export function enableDevMocks() {
       return Promise.reject({ __mock_bypass__: ok(courses) });
     }
 
+
+    if (url.match(/\/courses\/\d+$/) && method === "get") {
+      const id = Number(url.split("/").pop());
+      const courses = [
+        { id: 101, title: "React Fundamentals", description: "Components, state, props.", level: "Beginner", duration: "4h" },
+        { id: 102, title: "Django REST API", description: "Views, serializers, auth.", level: "Intermediate", duration: "6h" },
+        { id: 103, title: "Celery & Redis", description: "Tasks, queues, notifications.", level: "Intermediate", duration: "3h" },
+      ];
+      const course = courses.find(c => c.id === id);
+      if (!course) {
+        return Promise.reject({
+          __mock_bypass__: {
+            data: { detail: "Course not found (dev mock)" },
+            status: 404,
+            statusText: "Not Found",
+            headers: {},
+            config,
+          }
+        });
+      }
+      return Promise.reject({ __mock_bypass__: ok(course) });
+    }
+
+
     if (url.endsWith("/subscriptions/me") && method === "get") {
       return Promise.reject({ __mock_bypass__: ok({ status: "inactive" }) });
     }
@@ -78,6 +102,34 @@ export function enableDevMocks() {
           ],
         }),
       });
+    }
+
+    if (url.endsWith("/notifications") && method === "get") {
+      const now = Date.now();
+      const randNew = Math.random() < 0.25;
+
+      const baseNotifications = [
+        { id: 1, type: "reminder", message: "You haven’t watched any lessons in 'React Fundamentals' this week.", createdAt: new Date(now - 30 * 60 * 1000).toISOString(), read: false },
+        { id: 2, type: "recommendation", message: "Based on your interests, try 'Celery & Redis — Background Tasks'.", createdAt: new Date(now - 5 * 60 * 60 * 1000).toISOString(), read: false },
+        { id: 3, type: "subscription", message: "Your subscription is inactive. Subscribe to keep learning.", createdAt: new Date(now - 24 * 60 * 60 * 1000).toISOString(), read: true },
+      ];
+
+      const maybeNew = randNew
+        ? [
+          ...baseNotifications,
+          { id: 4, type: "progress", message: "You completed 2 lessons today—keep it up!", createdAt: new Date(now - 5 * 60 * 1000).toISOString(), read: false },
+        ]
+        : baseNotifications;
+
+      return Promise.reject({ __mock_bypass__: ok(maybeNew, 200) });
+    }
+
+    if (url.match(/\/notifications\/\d+\/read$/) && method === "post") {
+      return Promise.reject({ __mock_bypass__: ok({ status: "ok" }, 200) });
+    }
+
+    if (url.endsWith("/notifications/read-all") && method === "post") {
+      return Promise.reject({ __mock_bypass__: ok({ status: "ok" }, 200) });
     }
 
     return config;

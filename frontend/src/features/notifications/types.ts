@@ -1,4 +1,4 @@
-export type AlertItem = {
+export type NotificationItem = {
   id: number;
   type: "reminder" | "recommendation" | "subscription" | "progress" | "system";
   message: string;
@@ -6,4 +6,4 @@ export type AlertItem = {
   read: boolean;
 };
 
-export type AlertsResponse = AlertItem[];
+export type NotificationsResponse = NotificationItem[];

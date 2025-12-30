@@ -1,11 +1,11 @@
 @import '../../../styles/variables.css';
 
-.ax-alerts {
+.ax-notifications {
     position: relative;
     display: inline-flex;
 }
 
-.ax-alerts__btn {
+.ax-notifications__btn {
     position: relative;
     background: transparent;
     border: none;
@@ -17,16 +17,16 @@
     justify-content: center;
 }
 
-.ax-alerts__btn:hover {
+.ax-notifications__btn:hover {
     background: #f3f4f6;
 }
 
-.ax-alerts__bell {
+.ax-notifications__bell {
     font-size: 18px;
     line-height: 1;
 }
 
-.ax-alerts__badge {
+.ax-notifications__badge {
     position: absolute;
     top: -2px;
     right: -2px;
@@ -42,7 +42,7 @@
 }
 
 /* Panel */
-.ax-alerts__panel {
+.ax-notifications__panel {
     position: absolute;
     right: 0;
     margin-top: 8px;
@@ -58,7 +58,7 @@
 }
 
 /* triangle caret pointing to the bell */
-.ax-alerts__caret {
+.ax-notifications__caret {
     position: absolute;
     top: -8px;
     right: 18px;
@@ -71,7 +71,7 @@
     box-shadow: -4px -4px 10px rgba(0, 0, 0, 0.04);
 }
 
-.ax-alerts__header {
+.ax-notifications__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -80,12 +80,12 @@
     border-bottom: 1px solid #e5e7eb;
 }
 
-.ax-alerts__title {
+.ax-notifications__title {
     font-weight: 800;
     color: var(--brand-ink);
 }
 
-.ax-alerts__action {
+.ax-notifications__action {
     background: transparent;
     border: none;
     cursor: pointer;
@@ -94,16 +94,16 @@
     /* blue-600 */
 }
 
-.ax-alerts__action:hover {
+.ax-notifications__action:hover {
     text-decoration: underline;
 }
 
 /* Content area */
-.ax-alerts__content {
+.ax-notifications__content {
     padding: 10px;
 }
 
-.ax-alerts__empty {
+.ax-notifications__empty {
     display: grid;
     justify-items: center;
     gap: 8px;
@@ -111,12 +111,12 @@
     padding: 18px 10px;
 }
 
-.ax-alerts__empty-icon {
+.ax-notifications__empty-icon {
     font-size: 22px;
 }
 
 /* List */
-.ax-alerts__list {
+.ax-notifications__list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -126,30 +126,30 @@
     overflow-y: auto;
 }
 
-.ax-alerts__item {
+.ax-notifications__item {
     border: 1px solid #e5e7eb;
     border-radius: 10px;
     padding: 10px 12px;
     transition: background .15s ease, border-color .15s ease;
 }
 
-.ax-alerts__item.is-unread {
+.ax-notifications__item.is-unread {
     border-color: #c7d2fe;
     background: #eef2ff;
 }
 
 /* indigo-100/200 */
-.ax-alerts__item:hover {
+.ax-notifications__item:hover {
     background: #f9fafb;
 }
 
-.ax-alerts__line {
+.ax-notifications__line {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.ax-alerts__badge-type {
+.ax-notifications__badge-type {
     font-size: 12px;
     padding: 2px 8px;
     border-radius: 999px;
@@ -189,19 +189,19 @@
 
 /* gray */
 
-.ax-alerts__msg {
+.ax-notifications__msg {
     margin-top: 6px;
     color: #111827;
     line-height: 1.35;
 }
 
-.ax-alerts__time {
+.ax-notifications__time {
     margin-top: 4px;
     color: var(--ink-2);
     font-size: 12px;
 }
 
-.ax-alerts__read {
+.ax-notifications__read {
     background: transparent;
     border: none;
     cursor: pointer;
@@ -209,6 +209,6 @@
     font-size: 12px;
 }
 
-.ax-alerts__read:hover {
+.ax-notifications__read:hover {
     text-decoration: underline;
 }

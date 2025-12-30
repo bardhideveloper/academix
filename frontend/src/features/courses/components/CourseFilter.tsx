@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import type { Course } from '../types';
 
 type Props = {
@@ -10,11 +10,12 @@ export default function CourseFilter({ courses, onChange }: Props) {
     const [q, setQ] = useState('');
     const [level, setLevel] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
 
-    useMemo(() => {
+    useEffect(() => {
+        const query = q.trim().toLowerCase();
         const filtered = courses.filter(c => {
             const matchesText =
-                c.title.toLowerCase().includes(q.toLowerCase()) ||
-                (c.description ?? '').toLowerCase().includes(q.toLowerCase());
+                c.title.toLowerCase().includes(query) ||
+                (c.description ?? '').toLowerCase().includes(query);
             const matchesLevel = level === 'all' ? true : c.level === level;
             return matchesText && matchesLevel;
         });
@@ -29,7 +30,11 @@ export default function CourseFilter({ courses, onChange }: Props) {
                 onChange={e => setQ(e.target.value)}
                 style={{ padding: 8, flex: 1 }}
             />
-            <select value={level} onChange={e => setLevel(e.target.value as any)} style={{ padding: 8 }}>
+            <select
+                value={level}
+                onChange={e => setLevel(e.target.value as 'all' | 'beginner' | 'intermediate' | 'advanced')}
+                style={{ padding: 8 }}
+            >
                 <option value="all">All levels</option>
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
