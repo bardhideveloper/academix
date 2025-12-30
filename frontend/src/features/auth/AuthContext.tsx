@@ -4,8 +4,9 @@ import { http } from "../../lib/http";
 
 export type User = {
   id: number;
+  firstname?: string;
+  lastname?: string;
   email: string;
-  name?: string;
   role?: "student" | "admin";
 };
 
@@ -18,7 +19,7 @@ type AuthState = {
 type AuthContextValue = {
   state: AuthState;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name?: string) => Promise<void>;
+  register: (email: string, password: string, firstname?: string, lastname?: string) => Promise<void>;
   logout: () => void;
 };
 
@@ -31,7 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
   });
 
-  // On app mount, if token exists → fetch /auth/me
   useEffect(() => {
     const bootstrap = async () => {
       try {
@@ -47,18 +47,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
     bootstrap();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = async (email: string, password: string) => {
     const { data } = await http.post("/auth/login", { email, password });
-    // Expecting: { token, user }
     localStorage.setItem("ax_token", data.token);
     setState({ user: data.user, token: data.token, loading: false });
   };
 
-  const register = async (email: string, password: string, name?: string) => {
-    const { data } = await http.post("/auth/register", { email, password, name });
+  const register = async (email: string, password: string, firstname?: string, lastname?: string) => {
+    const { data } = await http.post("/auth/register", { email, password, firstname, lastname });
     localStorage.setItem("ax_token", data.token);
     setState({ user: data.user, token: data.token, loading: false });
   };
@@ -66,7 +64,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     localStorage.removeItem("ax_token");
     setState({ user: null, token: null, loading: false });
-    // Optional: call backend /auth/logout if you use server sessions
   };
 
   const value = useMemo(

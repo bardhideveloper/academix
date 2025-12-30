@@ -8,7 +8,7 @@ type Props = {
 
 export default function CourseFilter({ courses, onChange }: Props) {
     const [q, setQ] = useState('');
-    const [level, setLevel] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
+    const [category, setCategory] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
 
     useEffect(() => {
         const query = q.trim().toLowerCase();
@@ -16,11 +16,11 @@ export default function CourseFilter({ courses, onChange }: Props) {
             const matchesText =
                 c.title.toLowerCase().includes(query) ||
                 (c.description ?? '').toLowerCase().includes(query);
-            const matchesLevel = level === 'all' ? true : c.level === level;
+            const matchesLevel = category === 'all' ? true : c.category === category;
             return matchesText && matchesLevel;
         });
         onChange(filtered);
-    }, [q, level, courses, onChange]);
+    }, [q, category, courses, onChange]);
 
     return (
         <div style={{ display: 'flex', gap: 12, margin: '12px 0 20px' }}>
@@ -31,11 +31,11 @@ export default function CourseFilter({ courses, onChange }: Props) {
                 style={{ padding: 8, flex: 1 }}
             />
             <select
-                value={level}
-                onChange={e => setLevel(e.target.value as 'all' | 'beginner' | 'intermediate' | 'advanced')}
+                value={category}
+                onChange={e => setCategory(e.target.value as 'all' | 'beginner' | 'intermediate' | 'advanced')}
                 style={{ padding: 8 }}
             >
-                <option value="all">All levels</option>
+                <option value="all">All Categories</option>
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>

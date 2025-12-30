@@ -11,8 +11,9 @@ export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");   
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ export default function Register() {
     setErr(null);
     setLoading(true);
     try {
-      await register(email, password, name);
+      await register(email, password, firstname, lastname);
       navigate("/courses");
     } catch (error: any) {
       setErr(error.friendlyMessage ?? "Registration failed");
@@ -41,19 +42,21 @@ export default function Register() {
       )}
       <form onSubmit={onSubmit}>
         <div style={{ marginBottom: 12 }}>
-          <label>Name</label><br/>
-          <input value={name} onChange={(e) => setName(e.target.value)} style={{ width: "100%", padding: 8 }} />
+          <label>Firstname</label><br />
+          <input value={firstname} onChange={(e) => setFirstname(e.target.value)} style={{ width: "100%", padding: 8 }} />
         </div>
         <div style={{ marginBottom: 12 }}>
-          <label>Email</label><br/>
+          <label>Lastname</label><br />
+          <input value={lastname} onChange={(e) => setLastname(e.target.value)} style={{ width: "100%", padding: 8 }} />
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label>Email</label><br />
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: "100%", padding: 8 }} />
         </div>
         <div style={{ marginBottom: 12 }}>
-          <label>Password</label><br/>
+          <label>Password</label><br />
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: "100%", padding: 8 }} />
         </div>
-
-        {/* Submit the form */}
         <Button variant="primary" size="md" fullWidth loading={loading} type="submit">
           Register
         </Button>

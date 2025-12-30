@@ -58,9 +58,9 @@ export function enableDevMocks() {
 
     if (url.endsWith("/courses") && method === "get") {
       const courses = [
-        { id: 101, title: "React Fundamentals", description: "Components, state, props.", level: "Beginner", duration: "4h" },
-        { id: 102, title: "Django REST API", description: "Views, serializers, auth.", level: "Intermediate", duration: "6h" },
-        { id: 103, title: "Celery & Redis", description: "Tasks, queues, notifications.", level: "Intermediate", duration: "3h" },
+        { id: 101, title: "React Fundamentals", description: "Components, state, props.", category: "Beginner", duration: "4h" },
+        { id: 102, title: "Django REST API", description: "Views, serializers, auth.", category: "Intermediate", duration: "6h" },
+        { id: 103, title: "Celery & Redis", description: "Tasks, queues, notifications.", category: "Intermediate", duration: "3h" },
       ];
       return Promise.reject({ __mock_bypass__: ok(courses) });
     }
@@ -69,9 +69,9 @@ export function enableDevMocks() {
     if (url.match(/\/courses\/\d+$/) && method === "get") {
       const id = Number(url.split("/").pop());
       const courses = [
-        { id: 101, title: "React Fundamentals", description: "Components, state, props.", level: "Beginner", duration: "4h" },
-        { id: 102, title: "Django REST API", description: "Views, serializers, auth.", level: "Intermediate", duration: "6h" },
-        { id: 103, title: "Celery & Redis", description: "Tasks, queues, notifications.", level: "Intermediate", duration: "3h" },
+        { id: 101, title: "React Fundamentals", description: "Components, state, props.", category: "Beginner", duration: "4h" },
+        { id: 102, title: "Django REST API", description: "Views, serializers, auth.", category: "Intermediate", duration: "6h" },
+        { id: 103, title: "Celery & Redis", description: "Tasks, queues, notifications.", category: "Intermediate", duration: "3h" },
       ];
       const course = courses.find(c => c.id === id);
       if (!course) {
@@ -109,9 +109,9 @@ export function enableDevMocks() {
       const randNew = Math.random() < 0.25;
 
       const baseNotifications = [
-        { id: 1, type: "reminder", message: "You haven’t watched any lessons in 'React Fundamentals' this week.", createdAt: new Date(now - 30 * 60 * 1000).toISOString(), read: false },
-        { id: 2, type: "recommendation", message: "Based on your interests, try 'Celery & Redis — Background Tasks'.", createdAt: new Date(now - 5 * 60 * 60 * 1000).toISOString(), read: false },
-        { id: 3, type: "subscription", message: "Your subscription is inactive. Subscribe to keep learning.", createdAt: new Date(now - 24 * 60 * 60 * 1000).toISOString(), read: true },
+        { id: 1, title: "Test1", type: "reminder", message: "You haven’t watched any lessons in 'React Fundamentals' this week.", status: "test", createdAt: new Date(now - 30 * 60 * 1000).toISOString(), read: false },
+        { id: 2, title: "Test2", type: "recommendation", message: "Based on your interests, try 'Celery & Redis — Background Tasks'.", status: "test", createdAt: new Date(now - 5 * 60 * 60 * 1000).toISOString(), read: false },
+        { id: 3, title: "Test3", type: "subscription", message: "Your subscription is inactive. Subscribe to keep learning.", status: "test1", createdAt: new Date(now - 24 * 60 * 60 * 1000).toISOString(), read: true },
       ];
 
       const maybeNew = randNew
