@@ -29,6 +29,12 @@ export default function CourseDetail() {
         <WishlistButton courseId={course.id} />
       </div>
 
+
+      <p style={{ marginTop: 12 }}>
+        <Link to={`/courses/${course.id}/content`}>Go to content →</Link>
+      </p>
+
+
       <p><Link to="/courses">← Back to courses</Link></p>
     </div>
 

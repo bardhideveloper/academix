@@ -88,9 +88,50 @@ export function enableDevMocks() {
       return Promise.reject({ __mock_bypass__: ok(course) });
     }
 
+    const CONTENT_ACTIVITY_KEY = "__ax_course_activity__";
+    const readActivityStore = (): Record<string, any> => {
+      try {
+        return JSON.parse(localStorage.getItem(CONTENT_ACTIVITY_KEY) || "{}");
+      } catch {
+        return {};
+      }
+    };
+    const writeActivityStore = (obj: Record<string, any>) => {
+      localStorage.setItem(CONTENT_ACTIVITY_KEY, JSON.stringify(obj));
+    };
 
-    // --- Wishlist DEV MOCK START ---
-    // Helper functions for local persistence in DEV
+    function seedActivityIfMissing(courseId: number) {
+      const store = readActivityStore();
+      const key = String(courseId);
+
+      if (!store[key]) {
+        store[key] = {
+          activity: {
+            id: Number(`${courseId}00`),
+            userId: 1,
+            courseId,
+            lastActivityDate: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
+            predictedCancellation: Math.random() * 0.3,
+            loggedAt: new Date().toISOString(),
+          },
+        };
+        writeActivityStore(store);
+      }
+
+      return readActivityStore()[key];
+    }
+
+    if (url.match(/\/courses\/\d+\/content-activity$/) && method === "get") {
+      const parts = url.split("/");
+      const courseId = Number(parts[parts.length - 2]);
+
+      const node = seedActivityIfMissing(courseId);
+
+      return Promise.reject({
+        __mock_bypass__: ok(node, 200),
+      });
+    }
+
     const WISHLIST_KEY = "__ax_wishlist__";
     const readWishlist = (): number[] => {
       try {

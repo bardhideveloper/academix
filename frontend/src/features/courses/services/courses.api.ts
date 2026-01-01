@@ -1,5 +1,6 @@
 import { http } from "../../../lib/http";
 import type { Course } from "../types";
+import type { CourseContentActivityResponse } from "../types";
 
 export async function listCourses(): Promise<Course[]> {
   await new Promise((r) => setTimeout(r, 200));
@@ -17,3 +18,10 @@ export async function getCourse(id: number): Promise<Course | undefined> {
     throw err;
   }
 }
+
+export async function getCourseContentActivity(courseId: number): Promise<CourseContentActivityResponse> {
+  await new Promise(r => setTimeout(r, 200));
+  const { data } = await http.get<CourseContentActivityResponse>(`/courses/${courseId}/content-activity`);
+  return data;
+}
+
