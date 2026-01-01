@@ -89,6 +89,52 @@ export function enableDevMocks() {
     }
 
 
+    // --- Wishlist DEV MOCK START ---
+    // Helper functions for local persistence in DEV
+    const WISHLIST_KEY = "__ax_wishlist__";
+    const readWishlist = (): number[] => {
+      try {
+        const raw = localStorage.getItem(WISHLIST_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    };
+    const writeWishlist = (ids: number[]) => {
+      localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
+    };
+
+    if (url.endsWith("/wishlist") && method === "get") {
+      const ids = readWishlist();
+      const items = ids.map((course_id) => ({ course_id }));
+      return Promise.reject({ __mock_bypass__: ok(items, 200) });
+    }
+
+    if (url.endsWith("/wishlist") && method === "post") {
+      const body = config.data ?? {};
+      const courseId = Number(body.course_id);
+      const ids = readWishlist();
+      if (!ids.includes(courseId)) {
+        ids.push(courseId);
+        writeWishlist(ids);
+      }
+      return Promise.reject({ __mock_bypass__: ok({ status: "ok" }, 201) });
+    }
+
+    if (url.match(/\/wishlist\/\d+$/) && method === "delete") {
+      const courseId = Number(url.split("/").pop());
+      const ids = readWishlist().filter((id) => id !== courseId);
+      writeWishlist(ids);
+      return Promise.reject({ __mock_bypass__: ok({ status: "ok" }, 200) });
+    }
+
+    if (url.match(/\/wishlist\/\d+$/) && method === "get") {
+      const courseId = Number(url.split("/").pop());
+      const ids = readWishlist();
+      const exists = ids.includes(courseId);
+      return Promise.reject({ __mock_bypass__: ok({ exists }, 200) });
+    }
+
     if (url.endsWith("/subscriptions/me") && method === "get") {
       return Promise.reject({ __mock_bypass__: ok({ status: "inactive" }) });
     }

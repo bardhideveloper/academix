@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getCourse } from '../services/courses.api';
 import type { Course } from '../types';
+import WishlistButton from "../../wishlist/components/WishlistButton"
 import { useDocumentTitle } from '../../../lib/useDocumentTitle';
 
 export default function CourseDetail() {
@@ -23,7 +24,13 @@ export default function CourseDetail() {
     <div>
       <h1>{course.title}</h1>
       {course.description && <p>{course.description}</p>}
+
+      <div style={{ margin: "12px 0" }}>
+        <WishlistButton courseId={course.id} />
+      </div>
+
       <p><Link to="/courses">← Back to courses</Link></p>
     </div>
+
   );
 }

@@ -29,6 +29,7 @@ export default function NavBar() {
 
       <div className="nav__right">
         <NavLink to="/courses" style={linkStyle}>Courses</NavLink>
+        <NavLink to="/wishlist" style={linkStyle}>Wishlist</NavLink>
         <NavLink to="/subscriptions" style={linkStyle}>Subscriptions</NavLink>
         <NavLink to="/progress" style={linkStyle}>Progress</NavLink>
 
@@ -38,7 +39,7 @@ export default function NavBar() {
 
         {state.user ? (
           <div className="nav__auth">
-            <span className="nav__hello">Hi, {state.user.name ?? state.user.email}</span>
+            <span className="nav__hello">Hi, {state.user.firstname ?? state.user.email}</span>
             <Button variant="outline" size="sm" onClick={handleLogout}>Logout</Button>
           </div>
         ) : (

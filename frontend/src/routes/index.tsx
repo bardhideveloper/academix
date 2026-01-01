@@ -7,6 +7,7 @@ import NotFound from '../pages/NotFound';
 
 import CoursesList from '../features/courses/pages/CourseList';
 import CourseDetail from '../features/courses/pages/CourseDetail';
+import WishlistList from "../features/wishlist/pages/WishlistList";
 import Subscriptions from '../features/subscriptions/pages/Subscriptions';
 import ProgressDashboard from '../features/progress/pages/ProgressDashboard';
 import Login from '../features/auth/pages/Login';
@@ -27,6 +28,7 @@ export default function AppRoutes() {
           <Route element={<ProtectedRoute />}>
             <Route path="/courses" element={<CoursesList />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/wishlist" element={<WishlistList />} />
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/progress" element={<ProgressDashboard />} />
           </Route>
