@@ -30,7 +30,6 @@ export default function Subscriptions() {
     try {
       await startCheckout({ plan });
       alert(`Checkout started for ${plan} (mock).`);
-      // Later: redirect to payment flow or show success banner
     } catch (e: any) {
       alert(e.friendlyMessage ?? "Checkout failed");
     }

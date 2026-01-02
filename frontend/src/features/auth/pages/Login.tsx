@@ -1,10 +1,10 @@
 
-// features/auth/pages/Login.tsx
 import { useState } from 'react';
 import { useDocumentTitle } from '../../../lib/useDocumentTitle';
 import { useAuth } from '../AuthContext';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { SignInButton, RegisterButton } from '../../../components/UI/AuthButtons';
+import { SignInButton, CreateAccountButton } from '../../../components/UI/AuthButtons';
+import './auth.css';
 
 export default function Login() {
   useDocumentTitle('AcademiX — Login');
@@ -18,7 +18,7 @@ export default function Login() {
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const from = location.state?.from?.pathname || "/courses";
+  const from = location.state?.from?.pathname || '/courses';
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,33 +35,49 @@ export default function Login() {
   };
 
   return (
-    <div style={{ maxWidth: 420, margin: '3rem auto', padding: '1.5rem' }}>
-      <h1>Sign in</h1>
-      {err && (
-        <div style={{ background: '#ffe6e6', color: '#a40000', padding: 12, borderRadius: 8, marginBottom: 12 }}>
-          {err}
-        </div>
-      )}
-      <form onSubmit={onSubmit}>
-        <div style={{ marginBottom: 12 }}>
-          <label>Username or Email</label><br/>
-          <input value={identifier} onChange={e => setIdentifier(e.target.value)} style={{ width: '100%', padding: 8 }} required />
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>Password</label><br/>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} style={{ width: '100%', padding: 8 }} required />
-        </div>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1 className="auth-title">Sign in</h1>
 
-        <SignInButton loading={loading} fullWidth />
+        {err && <div className="auth-error">{err}</div>}
 
-        <div style={{ marginTop: 12 }}>
-          <RegisterButton /> {}
-        </div>
-      </form>
+        <form className="auth-form" onSubmit={onSubmit}>
+          <div className="auth-field">
+            <label htmlFor="identifier" className="auth-label">Username or Email</label>
+            <input
+              id="identifier"
+              className="auth-input"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="your@email.com"
+              required
+            />
+          </div>
 
-      <p style={{ marginTop: 12 }}>
-        Forgot password? <Link to="/reset">Reset</Link>
-      </p>
+          <div className="auth-field">
+            <label htmlFor="password" className="auth-label">Password</label>
+            <input
+              id="password"
+              type="password"
+              className="auth-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <div className="auth-actions">
+            <SignInButton loading={loading} fullWidth />
+            <CreateAccountButton loading={loading} fullWidth />
+          </div>
+
+        </form>
+
+        <p className="auth-hint">
+          Forgot password? <Link to="/reset" className="auth-link">Reset</Link>
+        </p>
+      </div>
     </div>
   );
 }

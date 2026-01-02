@@ -4,7 +4,7 @@ import './NavBar.css';
 import logo from '../../assets/academix-logo.png';
 import { useAuth } from '../../features/auth/AuthContext';
 import Button from '../UI/Button';
-import AlertsBell from '../../features/notifications/components/NotificationsBell';
+import NotificationsBell from '../../features/notifications/components/NotificationsBell';
 
 export default function NavBar() {
   const { state, logout } = useAuth();
@@ -33,9 +33,12 @@ export default function NavBar() {
         <NavLink to="/subscriptions" style={linkStyle}>Subscriptions</NavLink>
         <NavLink to="/progress" style={linkStyle}>Progress</NavLink>
 
-        <div className="nav__notifications">
-          <AlertsBell />
-        </div>
+
+        {state.user && (
+          <div className="nav__notifications">
+            <NotificationsBell />
+          </div>
+        )}
 
         {state.user ? (
           <div className="nav__auth">
