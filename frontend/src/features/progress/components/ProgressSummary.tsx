@@ -3,8 +3,8 @@ import type { CourseProgress } from "../types";
 export default function ProgressSummary({ items }: { items: CourseProgress[] }) {
   const totals = items.reduce(
     (acc, p) => {
-      acc.completed += p.completedLessons;
-      acc.total += p.totalLessons;
+      acc.completed += p.completed_lessons;
+      acc.total += p.total_lessons;
       return acc;
     },
     { completed: 0, total: 0 }

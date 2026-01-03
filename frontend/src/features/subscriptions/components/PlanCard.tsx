@@ -2,17 +2,17 @@ import Button from "../../../components/UI/Button";
 import "./plan-card.css";
 
 type PlanCardProps = {
-  name: "basic" | "pro";
+  name: string;
   priceLabel: string;
   features: string[];
-  onSubscribe: (plan: "basic" | "pro") => void;
+  onSubscribe: () => void;
 };
 
 export default function PlanCard({ name, priceLabel, features, onSubscribe }: PlanCardProps) {
   return (
     <div className="ax-plan">
       <div className="ax-plan__head">
-        <h3 style={{ margin: 0 }}>{name === "basic" ? "Basic" : "Pro"}</h3>
+        <h3 style={{ margin: 0 }}>{name}</h3>
         <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{priceLabel}</div>
       </div>
 
@@ -25,8 +25,8 @@ export default function PlanCard({ name, priceLabel, features, onSubscribe }: Pl
       </div>
 
       <div className="ax-plan__foot">
-        <Button variant="primary" fullWidth onClick={() => onSubscribe(name)}>
-          Subscribe {name === "basic" ? "Basic" : "Pro"}
+        <Button variant="primary" fullWidth onClick={onSubscribe}>
+          Subscribe
         </Button>
       </div>
     </div>

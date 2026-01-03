@@ -1,64 +1,58 @@
+
+// src/features/subscriptions/pages/Subscriptions.tsx
 import { useEffect, useState } from "react";
-import { useDocumentTitle } from "../../../lib/useDocumentTitle";
-import { getMySubscription, startCheckout } from "../services/subscriptions.api";
+import { getAvailableSubscriptions, startCheckout } from "../services/subscriptions.api";
 import type { SubscriptionStatus } from "../types";
-import SubscriptionStatusView from "../components/SubscriptionStatus";
 import PlanCard from "../components/PlanCard";
 
 export default function Subscriptions() {
-  useDocumentTitle("AcademiX — Subscriptions");
-
-  const [status, setStatus] = useState<SubscriptionStatus | null>(null);
+  const [plans, setPlans] = useState<SubscriptionStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    const run = async () => {
+    (async () => {
       try {
-        const s = await getMySubscription();
-        setStatus(s);
+        const data = await getAvailableSubscriptions();
+        setPlans(Array.isArray(data) ? data : []);
       } catch (e: any) {
-        setErr(e.friendlyMessage ?? "Failed to load subscription status");
+        setErr(e?.message ?? "Failed to load plans");
       } finally {
         setLoading(false);
       }
-    };
-    run();
+    })();
   }, []);
 
-  const onSubscribe = async (plan: "basic" | "pro") => {
-    try {
-      await startCheckout({ plan });
-      alert(`Checkout started for ${plan} (mock).`);
-    } catch (e: any) {
-      alert(e.friendlyMessage ?? "Checkout failed");
-    }
+  const onSubscribe = async (course_id: number) => {
+    await startCheckout({ course_id });
+    alert(`Subscribed to course_id: ${course_id}`);
   };
 
-  if (loading) return <p>Loading subscription…</p>;
+  if (loading) return <p>Loading plans…</p>;
   if (err) return <p style={{ color: "crimson" }}>{err}</p>;
 
   return (
-    <div>
-      <h1>Subscriptions</h1>
-      {status && <SubscriptionStatusView status={status} />}
+    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+      {plans.map((p) => {
+        const name = `Course ID: ${p.course_id}`;
+        const priceLabel = "—";
+        const features: string[] = [
+          `Status: ${p.status}`,
+          `Progress: ${p.progress}%`,
+          `Start Date: ${new Date(p.start_date).toLocaleDateString()}`,
+          ...(p.end_date ? [`End Date: ${new Date(p.end_date).toLocaleDateString()}`] : []),
+        ];
 
-      {status?.status !== "active" && (
-        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+        return (
           <PlanCard
-            name="basic"
-            priceLabel="$9.99/mo"
-            features={["Access to beginner courses", "Community support", "Email reminders"]}
-            onSubscribe={onSubscribe}
+            key={p.id}
+            name={name}
+            priceLabel={priceLabel}
+            features={features}
+            onSubscribe={() => onSubscribe(p.course_id)}
           />
-          <PlanCard
-            name="pro"
-            priceLabel="$19.99/mo"
-            features={["All courses", "Priority support", "Advanced reminders", "Pro certificates"]}
-            onSubscribe={onSubscribe}
-          />
-        </div>
-      )}
+        );
+      })}
     </div>
   );
 }

@@ -36,13 +36,13 @@ export function enableDevMocks() {
           message: "Unauthorized",
         };
       }
-      return Promise.reject({ __mock_bypass__: ok({ id: 1, email: "dev@academix.test", name: "Dev User", role: "student" }) });
+      return Promise.reject({ __mock_bypass__: ok({ id: 1, email: "dev@academix.test", firstname: "Dev User", role: "student" }) });
     }
 
     if (url.endsWith("/auth/login") && method === "post") {
       const body = config.data ?? {};
       const identifier = body.email ?? body.identifier ?? "user@academix.test";
-      const user = { id: 1, email: identifier, name: "Dev User", role: "student" };
+      const user = { id: 1, email: identifier, firstname: "Dev User", role: "student" };
       const token = "dev-token-" + Math.random().toString(36).slice(2);
       return Promise.reject({ __mock_bypass__: ok({ token, user }) });
     }
@@ -50,8 +50,9 @@ export function enableDevMocks() {
     if (url.endsWith("/auth/register") && method === "post") {
       const body = config.data ?? {};
       const email = body.email ?? "new@academix.test";
-      const name = body.name ?? "New User";
-      const user = { id: 2, email, name, role: "student" };
+      const firstname = body.firstname ?? "New User";
+      const lastname = body.lastname ?? "New User";
+      const user = { id: 2, email, firstname, lastname, role: "student" };
       const token = "dev-token-" + Math.random().toString(36).slice(2);
       return Promise.reject({ __mock_bypass__: ok({ token, user }) });
     }
@@ -100,19 +101,19 @@ export function enableDevMocks() {
       localStorage.setItem(CONTENT_ACTIVITY_KEY, JSON.stringify(obj));
     };
 
-    function seedActivityIfMissing(courseId: number) {
+    function seedActivityIfMissing(course_id: number) {
       const store = readActivityStore();
-      const key = String(courseId);
+      const key = String(course_id);
 
       if (!store[key]) {
         store[key] = {
           activity: {
-            id: Number(`${courseId}00`),
-            userId: 1,
-            courseId,
-            lastActivityDate: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
-            predictedCancellation: Math.random() * 0.3,
-            loggedAt: new Date().toISOString(),
+            id: Number(`${course_id}00`),
+            user_id: 1,
+            course_id,
+            last_activity_date: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
+            predicted_cancellation: Math.random() < 0.15,
+            logged_at: new Date().toISOString(),
           },
         };
         writeActivityStore(store);
@@ -123,9 +124,9 @@ export function enableDevMocks() {
 
     if (url.match(/\/courses\/\d+\/content-activity$/) && method === "get") {
       const parts = url.split("/");
-      const courseId = Number(parts[parts.length - 2]);
+      const course_id = Number(parts[parts.length - 2]);
 
-      const node = seedActivityIfMissing(courseId);
+      const node = seedActivityIfMissing(course_id);
 
       return Promise.reject({
         __mock_bypass__: ok(node, 200),
@@ -176,16 +177,36 @@ export function enableDevMocks() {
       return Promise.reject({ __mock_bypass__: ok({ exists }, 200) });
     }
 
-    if (url.endsWith("/subscriptions/me") && method === "get") {
-      return Promise.reject({ __mock_bypass__: ok({ status: "inactive" }) });
+
+    if (url.endsWith("/subscriptions/available") && method === "get") {
+      const available = [
+        {
+          id: 11,
+          user_id: 0,
+          course_id: 101,
+          status: "inactive",
+          start_date: new Date().toISOString(),
+          progress: 0,
+        },
+        {
+          id: 12,
+          user_id: 0,
+          course_id: 202,
+          status: "inactive",
+          start_date: new Date().toISOString(),
+          progress: 0,
+        },
+      ];
+      return Promise.reject({ __mock_bypass__: ok(available) });
     }
+
 
     if (url.endsWith("/progress/me") && method === "get") {
       return Promise.reject({
         __mock_bypass__: ok({
           courseProgress: [
-            { courseId: 101, title: "React Fundamentals", completedLessons: 5, totalLessons: 12, lastActive: new Date().toISOString() },
-            { courseId: 102, title: "Django REST API", completedLessons: 2, totalLessons: 18, lastActive: new Date().toISOString() },
+            { course_id: 101, title: "React Fundamentals", completed_lessons: 5, total_lessons: 12, },
+            { course_id: 102, title: "Django REST API", completed_lessons: 2, total_lessons: 18, },
           ],
         }),
       });

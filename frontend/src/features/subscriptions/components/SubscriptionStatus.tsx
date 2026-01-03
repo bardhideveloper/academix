@@ -4,9 +4,7 @@ export default function SubscriptionStatusView({ status }: { status: Subscriptio
   if (status.status === "active") {
     return (
       <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: 12, marginBottom: 16 }}>
-        <b>Active plan:</b> {status.plan ?? "—"}
-        <br />
-        <small>Renews at: {status.renewsAt ? new Date(status.renewsAt).toLocaleDateString() : "—"}</small>
+        <b>Active plan:</b> {"—"}
       </div>
     );
   }

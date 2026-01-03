@@ -9,14 +9,13 @@ import { getMyProgress } from "../../progress/services/progress.api";
 
 export default function CourseContent() {
     const { id } = useParams();
-    const courseId = Number(id);
+    const course_id = Number(id);
     useDocumentTitle("AcademiX — Course Content");
 
     const [course, setCourse] = useState<Course | undefined>();
     const [activity, setActivity] = useState<CourseContentActivityResponse | undefined>();
     const [completed, setCompleted] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
-    const [lastActive, setLastActive] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -26,8 +25,8 @@ export default function CourseContent() {
             setLoading(true);
             try {
                 const [c, a, p] = await Promise.all([
-                    getCourse(courseId),
-                    getCourseContentActivity(courseId),
+                    getCourse(course_id),
+                    getCourseContentActivity(course_id),
                     getMyProgress(),
                 ]);
 
@@ -36,38 +35,46 @@ export default function CourseContent() {
                 setCourse(c);
                 setActivity(a);
 
-                const match = p?.courseProgress?.find((x: any) => Number(x.courseId) === courseId);
-                const comp = Number(match?.completedLessons || 0);
-                const tot = Number(match?.totalLessons || 0);
+                const match = p?.courseProgress?.find((x: any) => Number(x.course_id) === course_id);
+                const comp = Number(match?.completed_lessons || 0);
+                const tot = Number(match?.total_lessons || 0);
 
                 setCompleted(comp);
                 setTotal(tot);
-                setLastActive(match?.lastActive);
             } finally {
                 if (mounted) setLoading(false);
             }
         }
 
-        if (Number.isFinite(courseId)) load();
-        return () => { mounted = false; };
-    }, [courseId]);
+        if (Number.isFinite(course_id)) load();
+        return () => {
+            mounted = false;
+        };
+    }, [course_id]);
 
+    // Use only the API-provided last_activity_date from CourseActivity
     const lastActivityDate = useMemo(() => {
-        return activity?.activity?.lastActivityDate ?? lastActive;
-    }, [activity, lastActive]);
+        return activity?.activity?.last_activity_date;
+    }, [activity]);
 
     if (loading) return <p>Loading…</p>;
 
     if (!course || !activity) {
         return (
             <p>
-                Course content not found. <Link to={`/courses/${courseId}`}>Back</Link>
+                Course content not found. <Link to={`/courses/${course_id}`}>Back</Link>
             </p>
         );
     }
 
-    const predicted = activity.activity?.predictedCancellation;
-    const predictedPct = typeof predicted === "number" ? Math.round(predicted * 100) : undefined;
+    // predicted_cancellation is boolean per your types
+    const predicted = activity.activity?.predicted_cancellation;
+    const predictedLabel =
+        typeof predicted === "boolean"
+            ? predicted
+                ? "High cancellation risk"
+                : "Low cancellation risk"
+            : undefined;
 
     return (
         <div>
@@ -87,21 +94,19 @@ export default function CourseContent() {
                     </p>
                 )}
 
-                {typeof predictedPct === "number" && (
-                    <p style={{ opacity: 0.7 }}>
-                        Predicted cancellation risk: {predictedPct}%
-                    </p>
+                {predictedLabel && (
+                    <p style={{ opacity: 0.7 }}>{predictedLabel}</p>
                 )}
             </section>
 
             <ProgressInline
                 completed={completed}
                 total={total}
-                lastActive={lastActivityDate}
+                last_activity_date={lastActivityDate}
             />
 
             <p style={{ marginTop: 16 }}>
-                <Link to={`/courses/${courseId}`}>← Back to courses</Link>
+                <Link to={`/courses/${course_id}`}>← Back to courses</Link>
             </p>
         </div>
     );

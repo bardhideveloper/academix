@@ -103,7 +103,7 @@ export default function NotificationsBell() {
                       )}
                     </div>
                     <div className="ax-notifications__msg">{a.message}</div>
-                    <div className="ax-notifications__time">{new Date(a.createdAt).toLocaleString()}</div>
+                    <div className="ax-notifications__time">{new Date(a.created_at).toLocaleString()}</div>
                   </li>
                 ))}
               </ul>
