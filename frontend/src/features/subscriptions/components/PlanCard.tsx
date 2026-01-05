@@ -1,3 +1,5 @@
+
+// src/features/subscriptions/components/PlanCard.tsx
 import Button from "../../../components/UI/Button";
 import "./plan-card.css";
 
@@ -5,10 +7,28 @@ type PlanCardProps = {
   name: string;
   priceLabel: string;
   features: string[];
-  onSubscribe: () => void;
+  // Primary action (required)
+  primaryLabel: string;
+  onPrimary: () => void;
+
+  // Optional secondary action (e.g., Cancel or Resume)
+  secondaryLabel?: string;
+  onSecondary?: () => void;
+
+  // Disable actions (e.g., while a request is in flight)
+  disabled?: boolean;
 };
 
-export default function PlanCard({ name, priceLabel, features, onSubscribe }: PlanCardProps) {
+export default function PlanCard({
+  name,
+  priceLabel,
+  features,
+  primaryLabel,
+  onPrimary,
+  secondaryLabel,
+  onSecondary,
+  disabled,
+}: PlanCardProps) {
   return (
     <div className="ax-plan">
       <div className="ax-plan__head">
@@ -24,11 +44,28 @@ export default function PlanCard({ name, priceLabel, features, onSubscribe }: Pl
         </ul>
       </div>
 
-      <div className="ax-plan__foot">
-        <Button variant="primary" fullWidth onClick={onSubscribe}>
-          Subscribe
+      <div className="ax-plan__foot" style={{ display: "grid", gap: 8 }}>
+        <Button
+          variant="primary"
+          fullWidth
+          onClick={onPrimary}
+          disabled={disabled}
+        >
+          {primaryLabel}
         </Button>
+
+        {secondaryLabel && onSecondary && (
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={onSecondary}
+            disabled={disabled}
+          >
+            {secondaryLabel}
+          </Button>
+        )}
       </div>
     </div>
   );
 }
+``

@@ -178,6 +178,163 @@ export function enableDevMocks() {
     }
 
 
+    // --- Subscriptions storage (localStorage) ---
+    const SUBSCRIPTIONS_KEY = "__ax_subscriptions__";
+
+    type SubscriptionStatus = {
+      id: number;
+      user_id: number;
+      course_id: number;
+      status: "inactive" | "active" | "in_progress" | "canceled";
+      start_date: string;
+      end_date?: string | null;
+      progress: number;
+    };
+
+    const USER_ID = 0;
+
+    const readSubscriptions = (): SubscriptionStatus[] => {
+      try {
+        const raw = localStorage.getItem(SUBSCRIPTIONS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const writeSubscriptions = (subs: SubscriptionStatus[]) => {
+      localStorage.setItem(SUBSCRIPTIONS_KEY, JSON.stringify(subs));
+    };
+
+    /**
+     * Upsert a subscription for a given course (activate if exists or create new).
+     */
+    function upsertActiveSubscription(course_id: number) {
+      const subs = readSubscriptions();
+      const existing = subs.find(s => s.user_id === USER_ID && s.course_id === course_id);
+
+      if (existing) {
+        existing.status = "active";
+        existing.start_date = new Date().toISOString();
+        existing.end_date = null;
+        existing.progress = existing.progress ?? 0;
+      } else {
+        subs.push({
+          id: Date.now(), // simple unique id for mock
+          user_id: USER_ID,
+          course_id,
+          status: "active",
+          start_date: new Date().toISOString(),
+          end_date: null,
+          progress: 0,
+        });
+      }
+
+      writeSubscriptions(subs);
+    }
+
+    /**
+     * Optional: ensure subscriptions store exists (no-op if already set).
+     */
+    function ensureSubscriptionsSeeded() {
+      const subs = readSubscriptions();
+      if (!Array.isArray(subs)) writeSubscriptions([]);
+    }
+
+
+
+    if (url.endsWith("/subscriptions/mine") && method === "get") {
+      ensureSubscriptionsSeeded();
+      const mine = readSubscriptions().filter(s => s.user_id === USER_ID);
+      return Promise.reject({ __mock_bypass__: ok(mine, 200) });
+    }
+
+
+    if (url.includes("/subscriptions/by-course/") && method === "get") {
+      ensureSubscriptionsSeeded();
+      const courseIdStr = url.split("/subscriptions/by-course/")[1];
+      const course_id = Number(courseIdStr);
+      const sub = readSubscriptions().find(s => s.user_id === USER_ID && s.course_id === course_id) || null;
+      return Promise.reject({ __mock_bypass__: ok(sub, 200) });
+    }
+
+
+    if (url.endsWith("/subscriptions/checkout") && method === "post") {
+      const body = config.data ?? {};
+      const course_id = Number(body.course_id);
+
+      if (!course_id || Number.isNaN(course_id)) {
+        return Promise.reject({
+          __mock_bypass__: {
+            data: { message: "course_id is required" },
+            status: 400,
+            statusText: "Bad Request",
+            headers: {},
+            config,
+          },
+        });
+      }
+
+      upsertActiveSubscription(course_id);
+      return Promise.reject({ __mock_bypass__: ok({ ok: true }, 200) });
+    }
+
+
+    if (/\/subscriptions\/\d+\/cancel$/.test(url) && method === "post") {
+      ensureSubscriptionsSeeded();
+      const idStr = url.match(/\/subscriptions\/(\d+)\/cancel$/)?.[1];
+      const id = Number(idStr);
+      const subs = readSubscriptions();
+
+      const sub = subs.find(s => s.id === id && s.user_id === USER_ID);
+      if (!sub) {
+        return Promise.reject({
+          __mock_bypass__: {
+            data: { message: "Subscription not found" },
+            status: 404,
+            statusText: "Not Found",
+            headers: {},
+            config,
+          },
+        });
+      }
+
+      sub.status = "canceled";
+      sub.end_date = new Date().toISOString();
+      writeSubscriptions(subs);
+
+      return Promise.reject({ __mock_bypass__: ok({ ok: true }, 200) });
+    }
+
+
+
+    if (/\/subscriptions\/\d+\/resume$/.test(url) && method === "post") {
+      ensureSubscriptionsSeeded();
+      const idStr = url.match(/\/subscriptions\/(\d+)\/resume$/)?.[1];
+      const id = Number(idStr);
+      const subs = readSubscriptions();
+
+      const sub = subs.find(s => s.id === id && s.user_id === USER_ID);
+      if (!sub) {
+        return Promise.reject({
+          __mock_bypass__: {
+            data: { message: "Subscription not found" },
+            status: 404,
+            statusText: "Not Found",
+            headers: {},
+            config,
+          },
+        });
+      }
+
+      sub.status = "active";
+      sub.start_date = new Date().toISOString();
+      sub.end_date = null;
+      writeSubscriptions(subs);
+
+      return Promise.reject({ __mock_bypass__: ok({ ok: true }, 200) });
+    }
+
     if (url.endsWith("/subscriptions/available") && method === "get") {
       const available = [
         {
