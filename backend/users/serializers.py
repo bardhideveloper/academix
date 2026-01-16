@@ -18,14 +18,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             last_name=validated_data.get('last_name', ''),
         )
 
-
-from rest_framework import serializers
-from django.contrib.auth import get_user_model, authenticate
-
-User = get_user_model()
-
 class LoginSerializer(serializers.Serializer):
-    identifier = serializers.CharField() 
+    identifier = serializers.CharField()
     password = serializers.CharField()
 
     def validate(self, data):
@@ -45,3 +39,8 @@ class LoginSerializer(serializers.Serializer):
 
         data['user'] = user
         return data
+
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "email", "first_name", "last_name"]
