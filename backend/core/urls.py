@@ -16,10 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Academix backend is running!")
 
 urlpatterns = [
+    path("", home),  # root path
     path("admin/", admin.site.urls),
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("api/auth/", include("users.urls")),
     path("courses/", include("courses.urls")),
-
 ]
+
