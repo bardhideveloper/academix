@@ -39,20 +39,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setState((s) => ({ ...s, loading: false }));
           return;
         }
-        const { data } = await http.get("/auth/me");
+
+        const { data } = await http.get("/auth/me/");
         setState((s) => ({ ...s, user: data, loading: false }));
       } catch {
         localStorage.removeItem("ax_token");
         setState({ user: null, token: null, loading: false });
       }
     };
+
     bootstrap();
-  }, []);
+  }, [state.token]);
+
 
   const login = async (email: string, password: string) => {
-    const { data } = await http.post("/auth/login", { email, password });
-    localStorage.setItem("ax_token", data.token);
-    setState({ user: data.user, token: data.token, loading: false });
+    const { data } = await http.post("api/auth/login/", { identifier: email, password, });
+    localStorage.setItem("ax_token", data.access);
+    const me = await http.get("api/auth/me/");
+    setState({ user: me.data, token: data.access, loading: false, });
   };
 
   const register = async (email: string, password: string, firstname?: string, lastname?: string) => {
