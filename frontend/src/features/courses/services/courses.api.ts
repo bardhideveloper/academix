@@ -4,7 +4,7 @@ import type { CourseContentActivityResponse } from "../types";
 
 export async function listCourses(): Promise<Course[]> {
   await new Promise((r) => setTimeout(r, 200));
-  const { data } = await http.get<Course[]>("/courses");
+  const { data } = await http.get<Course[]>("/courses/my/");
   return data;
 }
 
