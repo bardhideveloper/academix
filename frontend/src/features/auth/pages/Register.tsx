@@ -12,8 +12,8 @@ export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
+  const [first_name, setFirstname] = useState('');
+  const [last_name, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export default function Register() {
     setErr(null);
     setLoading(true);
     try {
-      await register(email, password, firstname, lastname);
+      await register(email, password, first_name, last_name);
       navigate('/courses');
     } catch (error: any) {
       setErr(error.friendlyMessage ?? 'Registration failed');
@@ -43,22 +43,22 @@ export default function Register() {
         <form className="auth-form" onSubmit={onSubmit}>
           <div className="auth-field-group">
             <div className="auth-field">
-              <label htmlFor="firstname" className="auth-label">Firstname</label>
+              <label htmlFor="first_name" className="auth-label">Firstname</label>
               <input
-                id="firstname"
+                id="first_name"
                 className="auth-input"
-                value={firstname}
+                value={first_name}
                 onChange={(e) => setFirstname(e.target.value)}
                 placeholder="John"
               />
             </div>
 
             <div className="auth-field">
-              <label htmlFor="lastname" className="auth-label">Lastname</label>
+              <label htmlFor="last_name" className="auth-label">Lastname</label>
               <input
-                id="lastname"
+                id="last_name"
                 className="auth-input"
-                value={lastname}
+                value={last_name}
                 onChange={(e) => setLastname(e.target.value)}
                 placeholder="Doe"
               />

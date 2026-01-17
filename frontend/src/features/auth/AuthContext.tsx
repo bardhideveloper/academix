@@ -4,8 +4,8 @@ import { http } from "../../lib/http";
 
 export type User = {
   id: number;
-  firstname?: string;
-  lastname?: string;
+  first_name?: string;
+  last_name?: string;
   email: string;
   role?: "student" | "admin";
 };
@@ -19,7 +19,7 @@ type AuthState = {
 type AuthContextValue = {
   state: AuthState;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, firstname?: string, lastname?: string) => Promise<void>;
+  register: (email: string, password: string, first_name?: string, last_name?: string) => Promise<void>;
   logout: () => void;
 };
 
@@ -53,14 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
   const login = async (email: string, password: string) => {
-    const { data } = await http.post("api/auth/login/", { identifier: email, password, });
+    const { data } = await http.post("/auth/login/", { identifier: email, password, });
     localStorage.setItem("ax_token", data.access);
-    const me = await http.get("api/auth/me/");
+    const me = await http.get("/auth/me/");
     setState({ user: me.data, token: data.access, loading: false, });
   };
 
-  const register = async (email: string, password: string, firstname?: string, lastname?: string) => {
-    const { data } = await http.post("/auth/register", { email, password, firstname, lastname });
+  const register = async (email: string, password: string, first_name?: string, last_name?: string) => {
+    const { data } = await http.post("/auth/register/", { email, password, first_name, last_name });
     localStorage.setItem("ax_token", data.token);
     setState({ user: data.user, token: data.token, loading: false });
   };
