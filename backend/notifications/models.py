@@ -11,6 +11,7 @@ class Notification(models.Model):
     STATUS_CHOICES = [
         ('sent', 'Sent'),
         ('pending', 'Pending'),
+        ('read', 'read'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -30,6 +30,7 @@ urlpatterns = [
     path("api/subscriptions/", include("subscriptions.urls")),
     path("api/progress/", include("progress.urls")),
     path("api/wishlist/", include("wishlist.urls")),
+    path("api/notifications/", include("notifications.urls")),
 
 ]
 
