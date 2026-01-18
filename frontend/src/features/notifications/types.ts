@@ -1,15 +1,16 @@
-import type { ISODate } from "../../lib/common";
+// import type { ISODate } from "../../lib/common";
 
 export type NotificationItem = {
   id: number;
-  user_id: number;
   title: string;
   message: string;
-  type: "reminder" | "recommendation" | "subscription" | "progress" | "system";
-  status: "test" | "test1"
-  created_at: ISODate;
-  sent_at?: ISODate; 
-  read: boolean;
+  type: string;
+  status: "sent" | "pending" | "read";
+  created_at: string;
+  sent_at?: string;
+  user_id: number;
+  read?: boolean;
 };
+
 
 export type NotificationsResponse = NotificationItem[];

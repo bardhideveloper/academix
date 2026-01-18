@@ -15,11 +15,18 @@ export default function NotificationsBell() {
   const fetchNoticiations = async () => {
     try {
       const data = await listNotifications();
-      setItems(data);
+
+      const normalized = data.map((n) => ({
+        ...n,
+        read: n.status === "read",
+      }));
+
+      setItems(normalized);
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchNoticiations();
@@ -28,7 +35,7 @@ export default function NotificationsBell() {
       stopPolling();
       intervalRef.current = window.setInterval(() => {
         if (document.hidden) return
-        if (open) return;    
+        if (open) return;
         fetchNoticiations();
       }, 30_000);
     };
@@ -46,13 +53,23 @@ export default function NotificationsBell() {
   const onToggle = () => setOpen((o) => !o);
 
   const onMarkRead = async (id: number) => {
-    setItems((prev) => prev.map((a) => (a.id === id ? { ...a, read: true } : a)));
-    try { await markNotificationRead(id); } catch {}
+    setItems((prev) =>
+      prev.map((a) =>
+        a.id === id ? { ...a, read: true, status: "read" } : a
+      )
+    );
+    try {
+      await markNotificationRead(id);
+    } catch { }
   };
 
   const onMarkAll = async () => {
-    setItems((prev) => prev.map((a) => ({ ...a, read: true })));
-    try { await markAllNotificationsRead(); } catch {}
+    setItems((prev) =>
+      prev.map((a) => ({ ...a, read: true, status: "read" }))
+    );
+    try {
+      await markAllNotificationsRead();
+    } catch { }
   };
 
   return (
@@ -118,10 +135,8 @@ export default function NotificationsBell() {
 function labelForType(t: NotificationItem["type"]) {
   switch (t) {
     case "reminder": return "Reminder";
-    case "recommendation": return "Recommendation";
-    case "subscription": return "Billing";
-    case "progress": return "Progress";
-    case "system": return "System";
+    case "warning": return "Warning";
+    case "info": return "Info";
     default: return "Alert";
   }
 }
