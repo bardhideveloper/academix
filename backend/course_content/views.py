@@ -1,20 +1,20 @@
+# course_content/views.py
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseForbidden
-from django.contrib.auth.decorators import login_required
-
 from course_content.models import Lesson
+from course_content.serializers import LessonSerializer
+from courses.models import Course
 
-
-@login_required
-def lesson_detail(request, lesson_id):
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def lesson_detail_api(request, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id)
     course = lesson.section.course
 
     if not course.user_has_access(request.user):
-        return HttpResponseForbidden("Access denied.")
+        return Response({"detail": "Access denied."}, status=403)
 
-    return render(
-        request,
-        "lessons/detail.html",
-        {"lesson": lesson}
-    )
+    serializer = LessonSerializer(lesson)
+    return Response(serializer.data)

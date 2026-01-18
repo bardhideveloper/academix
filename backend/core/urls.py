@@ -26,5 +26,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("users.urls")),
     path("api/courses/", include("courses.urls")),
+    # path("api/course-content/", include("course_content.urls")),
+    path("api/subscriptions/", include("subscriptions.urls")),
+    path("api/progress/", include("progress.urls")),
+
 ]
 

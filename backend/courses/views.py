@@ -1,6 +1,11 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from .serializers import CourseSerializer
+from subscriptions.models import Subscription
 
 from .models import Course
 
@@ -18,7 +23,10 @@ def course_detail(request, course_id):
     )
 
 
-@login_required
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def my_courses(request):
-    courses = Course.objects.filter(users=request.user)
-    return render(request, "courses/my_courses.html", {"courses": courses})
+    user_subscriptions = Subscription.objects.filter(user=request.user)
+    courses = [sub.course for sub in user_subscriptions]
+    serializer = CourseSerializer(courses, many=True)
+    return Response(serializer.data)
