@@ -1,7 +1,7 @@
 import { http } from "../../../lib/http";
-import type { ProgressResponse } from "../types";
+import type { CourseProgress } from "../types";
 
-export async function getMyProgress(): Promise<ProgressResponse> {
-  const { data } = await http.get("/progress/me");
-  return data as ProgressResponse;
+export async function getMyProgress(): Promise<CourseProgress[]> {
+  const { data } = await http.get<CourseProgress[]>("/progress/my");
+  return Array.isArray(data) ? data : [];
 }

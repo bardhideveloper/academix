@@ -87,9 +87,9 @@ export default function Subscriptions() {
         const priceLabel = "—";
         const features: string[] = [
           `Status: ${s.status}`,
-          `Progress: ${s.progress}%`,
           `Start Date: ${new Date(s.start_date).toLocaleDateString()}`,
           ...(s.end_date ? [`End Date: ${new Date(s.end_date).toLocaleDateString()}`] : []),
+          `Course: ${s.course_id}`,
         ];
 
         const isActive = s.status === "active" || s.status === "in_progress";

@@ -16,7 +16,7 @@ export default function ProgressDashboard() {
     const run = async () => {
       try {
         const data = await getMyProgress();
-        setItems(data.courseProgress);
+        setItems(data);
       } catch (e: any) {
         setErr(e.friendlyMessage ?? "Failed to load progress");
       } finally {
@@ -25,6 +25,7 @@ export default function ProgressDashboard() {
     };
     run();
   }, []);
+
 
   if (loading) return <p>Loading progress…</p>;
   if (err) return <p style={{ color: "crimson" }}>{err}</p>;

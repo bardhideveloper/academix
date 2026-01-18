@@ -3,10 +3,14 @@ import type { ISODate } from "../../lib/common";
 export type Course = {
   id: number;
   title: string;
+  code: string;
   description?: string;
-  category?: 'beginner' | 'intermediate' | 'advanced';
+  credits: string;
+  semester: string;
+  academic_year: string;
+  is_active: boolean;
   created_at: ISODate
-  updated_at: ISODate
+  instructor_id: number;
 };
 
 export type CourseActivity = {
