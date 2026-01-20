@@ -1,17 +1,10 @@
 from django.db import models
 from courses.models import Course
 
-
 class Section(models.Model):
-    course = models.ForeignKey(
-        Course,
-        on_delete=models.CASCADE,
-        related_name="sections"
-    )
-
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="sections")
     title = models.CharField(max_length=255)
     order = models.PositiveIntegerField()
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -25,24 +18,14 @@ class Section(models.Model):
 class Lesson(models.Model):
     CONTENT_TYPE_CHOICES = (
         ("video", "Video"),
+        ("pdf", "PDF"),
         ("article", "Article"),
     )
-
-    section = models.ForeignKey(
-        Section,
-        on_delete=models.CASCADE,
-        related_name="lessons"
-    )
-
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=255)
-    content_type = models.CharField(
-        max_length=10,
-        choices=CONTENT_TYPE_CHOICES
-    )
-
+    content_type = models.CharField(max_length=10, choices=CONTENT_TYPE_CHOICES)
     order = models.PositiveIntegerField()
     is_preview = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -54,21 +37,18 @@ class Lesson(models.Model):
 
 
 class LessonContent(models.Model):
-    lesson = models.OneToOneField(
-        Lesson,
-        on_delete=models.CASCADE,
-        related_name="content"
-    )
-
+    lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name="content")
     video_url = models.URLField(blank=True, null=True)
     article_text = models.TextField(blank=True, null=True)
+    pdf_file = models.FileField(upload_to="lessons/pdfs/", blank=True, null=True)
 
     def clean(self):
         from django.core.exceptions import ValidationError
 
         if self.lesson.content_type == "video" and not self.video_url:
             raise ValidationError("Video lesson must have a video URL.")
-
+        if self.lesson.content_type == "pdf" and not self.pdf_file:
+            raise ValidationError("PDF lesson must have a PDF file.")
         if self.lesson.content_type == "article" and not self.article_text:
             raise ValidationError("Article lesson must have article text.")
 

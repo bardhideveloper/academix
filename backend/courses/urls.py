@@ -1,9 +1,8 @@
 from django.urls import path
-from . import views
-
-app_name = "courses"
+from .views import CourseListAPIView, CourseDetailAPIView, MyCoursesAPIView
 
 urlpatterns = [
-    path("my/", views.my_courses, name="my_courses"),
-    path("<int:course_id>/", views.course_detail, name="course_detail"),
+    path('', CourseListAPIView.as_view(), name='courses-list'),            # GET /api/courses/
+    path('my/', MyCoursesAPIView.as_view(), name='my-courses'),            # GET /api/courses/my/
+    path('<int:id>/', CourseDetailAPIView.as_view(), name='course-detail'), # GET /api/courses/1/
 ]

@@ -4,5 +4,5 @@ from . import views
 app_name = "course_content"
 
 urlpatterns = [
-    path("<int:lesson_id>/", views.lesson_detail_api, name="lesson_detail_api"),
+    path("by-course/<int:course_id>/", views.lessons_by_course, name="lessons_by_course"),
 ]
