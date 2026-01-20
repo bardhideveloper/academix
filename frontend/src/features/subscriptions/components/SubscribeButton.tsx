@@ -1,3 +1,4 @@
+// src/features/subscriptions/SubscribeButton.tsx
 import { useEffect, useState } from "react";
 import {
     startCheckout,
@@ -12,52 +13,55 @@ type Props = {
 };
 
 export default function SubscribeButton({ courseId, size = "md" }: Props) {
-    const [subscribed, setSubscribed] = useState<boolean>(false);
+    const [subscribed, setSubscribed] = useState(false);
     const [subscriptionId, setSubscriptionId] = useState<number | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [loaded, setLoaded] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
 
+    // Kontrollon subscription kur komponenti mount
     useEffect(() => {
         let mounted = true;
-        (async () => {
+
+        const fetchSubscription = async () => {
             try {
                 const sub: SubscriptionStatus | null = await getSubscriptionByCourse(courseId);
                 if (!mounted) return;
 
-                const isActive = !!sub && (sub.status === "active" || sub.status === "in_progress");
-                setSubscribed(isActive);
+                setSubscribed(!!sub && (sub.status === "active" || sub.status === "in_progress"));
                 setSubscriptionId(sub?.id ?? null);
-            } catch {
+            } catch (err) {
+                console.error("Failed to load subscription", err);
             } finally {
                 if (mounted) setLoaded(true);
             }
-        })();
-
-        return () => {
-            mounted = false;
         };
+
+        fetchSubscription();
+
+        return () => { mounted = false; };
     }, [courseId]);
 
     const onToggle = async () => {
         if (loading) return;
         setLoading(true);
-        const prev = subscribed;
 
+        const prev = subscribed;
         setSubscribed(!prev);
 
         try {
             if (prev) {
-                if (!subscriptionId) {
-                    throw new Error("Subscription id is missing");
-                }
+                // Unsubscribe
+                if (!subscriptionId) throw new Error("Missing subscription id");
                 await cancelSubscription(subscriptionId);
                 setSubscriptionId(null);
             } else {
+                // Subscribe
                 await startCheckout({ course_id: courseId });
                 const sub = await getSubscriptionByCourse(courseId);
                 setSubscriptionId(sub?.id ?? null);
             }
-        } catch {
+        } catch (err) {
+            console.error(err);
             setSubscribed(prev);
             alert("Could not update subscription. Please try again.");
         } finally {

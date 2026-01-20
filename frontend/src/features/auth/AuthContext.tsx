@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, password: string, first_name?: string, last_name?: string) => {
     const { data } = await http.post("/auth/register/", { email, password, first_name, last_name });
-    localStorage.setItem("ax_token", data.token);
+    localStorage.setItem("ax_token", data.access);
     setState({ user: data.user, token: data.token, loading: false });
   };
 

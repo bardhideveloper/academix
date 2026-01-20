@@ -1,54 +1,35 @@
-import { useEffect, useState } from 'react';
-import { listCourses } from '../services/courses.api';
-import type { Course } from '../types';
-import CourseCard from '../components/CourseCard';
-import { Link } from 'react-router-dom';
-import CourseFilter from '../components/CourseFilter';
-import SkeletonCard from '../../../components/Skeleton/SkeletonCard';
-import { useDocumentTitle } from '../../../lib/useDocumentTitle';
+import React, { useEffect, useState } from "react";
+import { listCourses } from "../services/courses.api";
+import type { Course } from "../types";
+import CourseCard from "../components/CourseCard";
 
-export default function CoursesList() {
-  useDocumentTitle('AcademiX — Courses');
+export default function CourseList() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [filtered, setFiltered] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     listCourses()
-      .then(d => {
-        setCourses(d);
-        setFiltered(d);
+      .then(data => {
+        console.log("Courses fetched:", data); // debug
+        setCourses(data);
       })
-      .finally(() => setLoading(false));
+      .catch(err => console.error(err));
   }, []);
 
+  if (!courses.length) return <p>Loading courses...</p>;
+
   return (
-    <div>
-      <h1>Courses</h1>
-      {loading ? (
-        <div className="grid">
-          {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
-        </div>
-      ) : (
-        <>
-          <CourseFilter courses={courses} onChange={setFiltered} />
-          {filtered.length === 0 ? (
-            <p style={{ opacity: 0.7 }}>No courses match your filters.</p>
-          ) : (
-            <div className="grid">
-              {filtered.map(c => (
-                <Link
-                  key={c.id}
-                  to={`/courses/${c.id}`}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
-                  <CourseCard course={c} />
-                </Link>
-              ))}
-            </div>
-          )}
-        </>
-      )}
+    <div
+  style={{
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 12,          
+    justifyContent: "flex-start", 
+    padding: 16,
+  }}
+>
+      {courses.map(course => (
+        <CourseCard key={course.id} course={course} />
+      ))}
     </div>
   );
 }

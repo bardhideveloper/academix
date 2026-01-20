@@ -1,6 +1,8 @@
 import type { ISODate } from "../../lib/common";
 
 export type SubscriptionStatus = {
+  course_title: string;
+  can_access_content: any;
   id: number;
   status: string;
   start_date: ISODate;

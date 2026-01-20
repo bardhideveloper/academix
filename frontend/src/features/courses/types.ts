@@ -1,6 +1,7 @@
 import type { ISODate } from "../../lib/common";
 
 export type Course = {
+  isSubscribed: any;
   id: number;
   title: string;
   code: string;
@@ -9,8 +10,9 @@ export type Course = {
   semester: string;
   academic_year: string;
   is_active: boolean;
-  created_at: ISODate
+  created_at: ISODate;
   instructor_id: number;
+  instructor_name:string;
 };
 
 export type CourseActivity = {

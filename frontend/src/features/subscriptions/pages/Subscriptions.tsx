@@ -30,17 +30,24 @@ export default function Subscriptions() {
     load();
   }, []);
 
-  const handleSubscribe = async (course_id: number) => {
-    try {
-      setBusyKey(course_id);
-      await startCheckout({ course_id });
-      await load();
-    } catch (e: any) {
-      alert(e?.message ?? "Failed to subscribe");
-    } finally {
-      setBusyKey(null);
-    }
-  };
+ const handleSubscribe = async (course_id: number) => {
+  const existingSub = subs.find(s => s.course_id === course_id && s.status === "active");
+  if (existingSub) {
+    alert("You are already subscribed to this course!");
+    return;
+  }
+
+  try {
+    setBusyKey(course_id);
+    await startCheckout({ course_id });
+    await load();
+  } catch (e: any) {
+    alert(e?.message ?? "Failed to subscribe");
+  } finally {
+    setBusyKey(null);
+  }
+};
+
 
   const handleCancel = async (id: number) => {
     try {
@@ -83,41 +90,39 @@ export default function Subscriptions() {
   return (
     <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
       {subs.map((s) => {
-        const name = `Course ID: ${s.course_id}`;
+        const name = s.course_title || `Course ID: ${s.course_id}`;
         const priceLabel = "—";
         const features: string[] = [
           `Status: ${s.status}`,
           `Start Date: ${new Date(s.start_date).toLocaleDateString()}`,
           ...(s.end_date ? [`End Date: ${new Date(s.end_date).toLocaleDateString()}`] : []),
-          `Course: ${s.course_id}`,
+          `Course ID: ${s.course_id}`,
         ];
 
         const isActive = s.status === "active" || s.status === "in_progress";
-        const isCanceled = s.status === "canceled";
-        const isInactive = s.status === "inactive";
+const isCancelled = s.status === "cancelled" || s.status === "expired";
+const canAccess = s.can_access_content;
 
-        let primaryLabel = "";
-        let onPrimary: () => void = () => { };
-        let secondaryLabel: string | undefined;
-        let onSecondary: (() => void) | undefined;
+let primaryLabel = "";
+let onPrimary: () => void = () => {};
+let secondaryLabel: string | undefined;
+let onSecondary: (() => void) | undefined;
 
-        if (isActive) {
-          primaryLabel = "Go to content";
-          onPrimary = () => (window.location.href = `/courses/${s.course_id}/content`);
-          secondaryLabel = "Cancel";
-          onSecondary = () => handleCancel(s.id);
-        } else if (isCanceled) {
-          primaryLabel = "Resume";
-          onPrimary = () => handleResume(s.id);
-        } else if (isInactive) {
-          primaryLabel = "Subscribe";
-          onPrimary = () => handleSubscribe(s.course_id);
-        } else {
-          primaryLabel = "Details";
-          onPrimary = () => { };
-        }
+if (isActive) {
+  primaryLabel = "Go to content";
+  onPrimary = () => window.location.href = `/courses/${s.course_id}/content`;
+  secondaryLabel = "Unsubscribe";
+  onSecondary = () => handleCancel(s.id);
+} else if (isCancelled) {
+  primaryLabel = "Resume";
+  onPrimary = () => handleResume(s.id);
+} else {
+  primaryLabel = "Subscribe";
+  onPrimary = () => handleSubscribe(s.course_id);
+}
 
-        const disabled = busyKey === s.id || busyKey === s.course_id;
+const disabled = busyKey === s.id || busyKey === s.course_id;
+
 
         return (
           <PlanCard
