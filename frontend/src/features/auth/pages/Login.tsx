@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { useDocumentTitle } from '../../../lib/useDocumentTitle';
 import { useAuth } from '../AuthContext';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { SignInButton, CreateAccountButton } from '../../../components/UI/AuthButtons';
-import './auth.css';
+import './Auth.css';
 
 export default function Login() {
   useDocumentTitle('AcademiX — Login');
@@ -69,7 +68,7 @@ export default function Login() {
 
           <div className="auth-actions">
             <SignInButton loading={loading} fullWidth />
-            <CreateAccountButton loading={loading} fullWidth />
+            <CreateAccountButton fullWidth />
           </div>
 
         </form>

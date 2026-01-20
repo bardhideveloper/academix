@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  getMySubscriptions,
-  startCheckout,
-  cancelSubscription,
-  resumeSubscription,
-} from "../services/subscriptions.api";
+import { getMySubscriptions, startCheckout, cancelSubscription, resumeSubscription } from "../services/subscriptions.api";
 import type { SubscriptionStatus } from "../types";
 import PlanCard from "../components/PlanCard";
 
@@ -30,23 +25,23 @@ export default function Subscriptions() {
     load();
   }, []);
 
- const handleSubscribe = async (course_id: number) => {
-  const existingSub = subs.find(s => s.course_id === course_id && s.status === "active");
-  if (existingSub) {
-    alert("You are already subscribed to this course!");
-    return;
-  }
+  const handleSubscribe = async (course_id: number) => {
+    const existingSub = subs.find(s => s.course_id === course_id && s.status === "active");
+    if (existingSub) {
+      alert("You are already subscribed to this course!");
+      return;
+    }
 
-  try {
-    setBusyKey(course_id);
-    await startCheckout({ course_id });
-    await load();
-  } catch (e: any) {
-    alert(e?.message ?? "Failed to subscribe");
-  } finally {
-    setBusyKey(null);
-  }
-};
+    try {
+      setBusyKey(course_id);
+      await startCheckout({ course_id });
+      await load();
+    } catch (e: any) {
+      alert(e?.message ?? "Failed to subscribe");
+    } finally {
+      setBusyKey(null);
+    }
+  };
 
 
   const handleCancel = async (id: number) => {
@@ -100,28 +95,28 @@ export default function Subscriptions() {
         ];
 
         const isActive = s.status === "active" || s.status === "in_progress";
-const isCancelled = s.status === "cancelled" || s.status === "expired";
-const canAccess = s.can_access_content;
+        const isCancelled = s.status === "cancelled" || s.status === "expired";
+        // const canAccess = s.can_access_content;
 
-let primaryLabel = "";
-let onPrimary: () => void = () => {};
-let secondaryLabel: string | undefined;
-let onSecondary: (() => void) | undefined;
+        let primaryLabel = "";
+        let onPrimary: () => void = () => { };
+        let secondaryLabel: string | undefined;
+        let onSecondary: (() => void) | undefined;
 
-if (isActive) {
-  primaryLabel = "Go to content";
-  onPrimary = () => window.location.href = `/courses/${s.course_id}/content`;
-  secondaryLabel = "Unsubscribe";
-  onSecondary = () => handleCancel(s.id);
-} else if (isCancelled) {
-  primaryLabel = "Resume";
-  onPrimary = () => handleResume(s.id);
-} else {
-  primaryLabel = "Subscribe";
-  onPrimary = () => handleSubscribe(s.course_id);
-}
+        if (isActive) {
+          primaryLabel = "Go to content";
+          onPrimary = () => window.location.href = `/courses/${s.course_id}/content`;
+          secondaryLabel = "Unsubscribe";
+          onSecondary = () => handleCancel(s.id);
+        } else if (isCancelled) {
+          primaryLabel = "Resume";
+          onPrimary = () => handleResume(s.id);
+        } else {
+          primaryLabel = "Subscribe";
+          onPrimary = () => handleSubscribe(s.course_id);
+        }
 
-const disabled = busyKey === s.id || busyKey === s.course_id;
+        const disabled = busyKey === s.id || busyKey === s.course_id;
 
 
         return (

@@ -1,9 +1,7 @@
-// src/features/wishlist/WishlistList.tsx
 import { useEffect, useState } from "react";
 import type { WishlistItem } from "../types";
 import { listWishlist } from "../services/wishlist.api";
 import WishlistButton from "../components/WishlistButton";
-
 
 export default function WishlistList() {
     const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
@@ -27,12 +25,7 @@ export default function WishlistList() {
     return (
         <div className="wishlist-grid">
             {wishlist.map(item => (
-                <div key={item.id} className="wishlist-item" style={{
-                    border: "1px solid #ddd",
-                    padding: 16,
-                    borderRadius: 8,
-                    marginBottom: 12
-                }}>
+                <div key={item.id} className="wishlist-item" style={{ border: "1px solid #ddd", padding: 16, borderRadius: 8, marginBottom: 12 }}>
                     <h2>{item.course.title}</h2>
                     <p>{item.course.description}</p>
                     <p><strong>Code:</strong> {item.course.code}</p>
@@ -41,11 +34,7 @@ export default function WishlistList() {
                     <p><strong>Year:</strong> {item.course.academic_year}</p>
                     <p><strong>Active:</strong> {item.course.is_active ? "Yes" : "No"}</p>
 
-                    <WishlistButton
-                        courseId={item.course.id}
-                        size="sm"
-                        onToggleSuccess={fetchWishlist} // rifreskon listën pas heqjes
-                    />
+                    <WishlistButton courseId={item.course.id} size="sm" onToggleSuccess={fetchWishlist} />
                 </div>
             ))}
         </div>

@@ -1,6 +1,5 @@
-
-// routes/index.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
 import AppLayout from '../components/Layouts/AppLayout';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
@@ -8,9 +7,13 @@ import NotFound from '../pages/NotFound';
 import CoursesList from '../features/courses/pages/CourseList';
 import CourseDetail from '../features/courses/pages/CourseDetail';
 import CourseContent from '../features/courses/pages/CourseContent';
+
 import WishlistList from "../features/wishlist/pages/WishlistList";
+
 import Subscriptions from '../features/subscriptions/pages/Subscriptions';
+
 import ProgressDashboard from '../features/progress/pages/ProgressDashboard';
+
 import Login from '../features/auth/pages/Login';
 import Register from '../features/auth/pages/Register';
 

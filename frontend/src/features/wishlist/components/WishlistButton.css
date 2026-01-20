@@ -1,0 +1,36 @@
+.wishlist-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.wishlist-btn:hover:not(:disabled) {
+    transform: scale(1.03);
+}
+
+.wishlist-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.wishlist-btn.active {
+    background: #ffe6ea;
+}
+
+.wishlist-btn.sm {
+    font-size: 14px;
+}
+
+.wishlist-btn.md {
+    font-size: 16px;
+}
+
+.wishlist-heart {
+    line-height: 1;
+}

@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { http } from "../../lib/http";
 
@@ -7,7 +6,7 @@ export type User = {
   first_name?: string;
   last_name?: string;
   email: string;
-  role?: "student" | "admin";
+  role?: "student" | "instructor" | "admin";
 };
 
 type AuthState = {

@@ -22,14 +22,7 @@ export default function ProgressSummary({
     <div style={{ marginBottom: 16, padding: 12, border: "1px solid #e5e7eb", borderRadius: 8 }}>
       <b>Overall completion:</b> {totals.completed}/{totals.total} ({pct}%)
       <div style={{ marginTop: 8, height: 8, background: "#e5e7eb", borderRadius: 999 }}>
-        <div
-          style={{
-            width: `${pct}%`,
-            height: 8,
-            background: "#2563eb",
-            borderRadius: 999,
-            transition: "width .2s ease",
-          }}
+        <div style={{ width: `${pct}%`, height: 8, background: "#2563eb", borderRadius: 999, transition: "width .2s ease", }}
         />
       </div>
     </div>

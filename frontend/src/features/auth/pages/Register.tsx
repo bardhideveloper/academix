@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDocumentTitle } from '../../../lib/useDocumentTitle';
 import Button from '../../../components/UI/Button';
-import './auth.css';
+import './Auth.css';
 
 export default function Register() {
   useDocumentTitle('AcademiX — Register');

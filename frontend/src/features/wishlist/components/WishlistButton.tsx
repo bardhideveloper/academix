@@ -1,36 +1,43 @@
 import { useEffect, useState } from "react";
 import { addToWishlist, isWishlisted, removeFromWishlist } from "../services/wishlist.api";
+import "./WishlistButton.css";
 
 type Props = {
   courseId: number;
   size?: "sm" | "md";
-  onToggleSuccess?: () => void; // callback opsional
+  onToggleSuccess?: () => void;
 };
 
-export default function WishlistButton({ courseId, size = "md", onToggleSuccess }: Props) {
-  const [wishlisted, setWishlisted] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [loaded, setLoaded] = useState<boolean>(false);
+export default function WishlistButton({
+  courseId,
+  size = "md",
+  onToggleSuccess,
+}: Props) {
+  const [wishlisted, setWishlisted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     isWishlisted(courseId)
-      .then(exists => {
+      .then((exists) => {
         if (mounted) {
           setWishlisted(exists);
           setLoaded(true);
         }
       })
       .catch(() => setLoaded(true));
-    return () => { mounted = false; };
+
+    return () => {
+      mounted = false;
+    };
   }, [courseId]);
 
   const onToggle = async () => {
     if (loading) return;
+
     setLoading(true);
     const prev = wishlisted;
-
-    // Optimistic UI
     setWishlisted(!prev);
 
     try {
@@ -39,8 +46,6 @@ export default function WishlistButton({ courseId, size = "md", onToggleSuccess 
       } else {
         await addToWishlist(courseId);
       }
-
-      // thirr callback pas suksesi për rifreskim
       onToggleSuccess?.();
     } catch {
       setWishlisted(prev);
@@ -52,7 +57,6 @@ export default function WishlistButton({ courseId, size = "md", onToggleSuccess 
 
   const label = wishlisted ? "Remove from wishlist" : "Add to wishlist";
   const heart = wishlisted ? "♥" : "♡";
-  const fontSize = size === "sm" ? 16 : 18;
 
   return (
     <button
@@ -62,18 +66,9 @@ export default function WishlistButton({ courseId, size = "md", onToggleSuccess 
       aria-pressed={wishlisted}
       aria-label={label}
       title={label}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "6px 10px",
-        borderRadius: 8,
-        border: "1px solid #ddd",
-        background: wishlisted ? "#ffe6ea" : "#fff",
-        cursor: loading ? "not-allowed" : "pointer",
-      }}
+      className={`wishlist-btn ${size} ${wishlisted ? "active" : ""}`}
     >
-      <span style={{ fontSize }}>{heart}</span>
+      <span className="wishlist-heart">{heart}</span>
       <span>{label}</span>
     </button>
   );

@@ -1,8 +1,7 @@
-
 import { useEffect, useRef, useState } from "react";
 import { listNotifications, markNotificationRead, markAllNotificationsRead } from "../services/notifications.api";
 import type { NotificationItem } from "../types";
-import "./notifications-bell.css";
+import "./NotificationsBell.css";
 
 export default function NotificationsBell() {
   const [items, setItems] = useState<NotificationItem[]>([]);

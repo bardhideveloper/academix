@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDocumentTitle } from "../../../lib/useDocumentTitle";
 import { getMyProgress } from "../services/progress.api";
+import { listCourses } from "../../courses/services/courses.api";
 import type { CourseProgress } from "../types";
+import type { Course } from "../../courses/types";
 import ProgressSummary from "../components/ProgressSummary";
 import ProgressList from "../components/ProgressList";
 
@@ -15,8 +17,20 @@ export default function ProgressDashboard() {
   useEffect(() => {
     const run = async () => {
       try {
-        const data = await getMyProgress();
-        setItems(data);
+        const courses: Course[] = await listCourses();
+        const courseMap: Record<number, Course> = courses.reduce((acc, c) => {
+          acc[c.id] = c;
+          return acc;
+        }, {} as Record<number, Course>);
+
+        const rawProgress = await getMyProgress();
+
+        const progressWithCourses: CourseProgress[] = rawProgress.map(p => ({
+          ...p,
+          course: courseMap[p.id]
+        }));
+
+        setItems(progressWithCourses);
       } catch (e: any) {
         setErr(e.friendlyMessage ?? "Failed to load progress");
       } finally {
@@ -25,7 +39,6 @@ export default function ProgressDashboard() {
     };
     run();
   }, []);
-
 
   if (loading) return <p>Loading progress…</p>;
   if (err) return <p style={{ color: "crimson" }}>{err}</p>;

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Course } from "../types";
+import "./CourseCard.css";
 import WishlistButton from "../../wishlist/components/WishlistButton";
 import {
   startCheckout,
@@ -72,7 +73,7 @@ export default function CourseCard({ course, onWishlistRemove }: Props) {
 
   // Vendos label dhe funksion bazuar në status
   let primaryLabel = "";
-  let primaryAction: () => void = () => {};
+  let primaryAction: () => void = () => { };
   if (subscribed) {
     primaryLabel = "Go to content";
     primaryAction = handleGoToContent;
@@ -82,74 +83,27 @@ export default function CourseCard({ course, onWishlistRemove }: Props) {
   }
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: 12,
-        padding: 16,
-        width: 250,
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        transition: "transform 0.2s",
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
-      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-    >
-      <h2 style={{ fontSize: 18, marginBottom: 4 }}>{course.title || "No title"}</h2>
-      <p style={{ margin: 0 }}><strong>Code:</strong> {course.code || "-"}</p>
-      <p style={{ margin: 0 }}><strong>Credits:</strong> {course.credits ?? "-"}</p>
-      <p style={{ margin: 0 }}><strong>Semester:</strong> {course.semester || "-"}</p>
-      <p style={{ margin: 0 }}><strong>Year:</strong> {course.academic_year || "-"}</p>
-      <p style={{ margin: 0 }}><strong>Instructor:</strong> {course.instructor_name || "-"}</p>
+    <div className="course-card">
+      {/* Course info */}
+      <div className="course-info">
+        <h2 className="course-title"> {course.title || "No title"}</h2>
 
-      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-        {/* Wishlist button */}
-        <WishlistButton
-          courseId={course.id}
-          size="sm"
-          onRemove={onWishlistRemove ? () => onWishlistRemove(course.id) : undefined}
-        />
+        <p><strong>Code:</strong> {course.code || "-"}</p>
+        <p><strong>Credits:</strong> {course.credits ?? "-"}</p>
+        <p><strong>Semester:</strong> {course.semester || "-"}</p>
+        <p><strong>Year:</strong> {course.academic_year || "-"}</p>
+        <p><strong>Instructor:</strong> {course.instructor_name || "-"}</p>
+      </div>
 
-        {/* Primary action: Subscribe / Go to content */}
-        <button
-          onClick={primaryAction}
-          disabled={subscribing}
-          style={{
-            flex: 1,
-            padding: "6px 10px",
-            borderRadius: 8,
-            border: "1px solid #007bff",
-            background: subscribing ? "#6ea0ff" : "#007bff",
-            color: "#fff",
-            fontWeight: 500,
-            cursor: subscribing ? "not-allowed" : "pointer",
-            transition: "background 0.2s",
-          }}
-        >
+      {/* Actions */}
+      <div className="course-actions">
+        <WishlistButton courseId={course.id} size="sm" onToggleSuccess={onWishlistRemove ? () => onWishlistRemove(course.id) : undefined} />
+        <button onClick={primaryAction} disabled={subscribing} className="primary-btn">
           {subscribing ? "Processing..." : primaryLabel}
         </button>
-
-        {/* Secondary action: Unsubscribe */}
-        {subscribed && (
-          <button
-            onClick={handleUnsubscribe}
-            disabled={subscribing}
-            style={{
-              padding: "6px 10px",
-              borderRadius: 8,
-              border: "1px solid #dc3545",
-              background: "#dc3545",
-              color: "#fff",
-              fontWeight: 500,
-              cursor: subscribing ? "not-allowed" : "pointer",
-            }}
-          >
-            Unsubscribe
-          </button>
-        )}
+        {subscribed && (<button onClick={handleUnsubscribe} disabled={subscribing} className="unsubscribe-btn">Unsubscribe</button>)}
       </div>
     </div>
   );
+
 }
