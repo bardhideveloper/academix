@@ -1,0 +1,28 @@
+.section-card {
+  border: 1px solid #ddd;
+  padding: 16px;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease;
+}
+
+.section-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section-card h3 {
+  margin: 0 0 12px 0;
+}
+
+.section-card button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.section-card button:hover {
+  background-color: #0056b3;
+}

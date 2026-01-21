@@ -1,17 +1,27 @@
-/*export type LessonContent = {
-  video_url?: string;
-  article_text?: string;
-  pdf_file?: string; 
-};
+import type { ISODate } from "../../lib/common";
 
-export type Lesson = {
+export type ContentSection = {
   id: number;
   title: string;
-  content_type: "video" | "article" | "pdf";
-  content: LessonContent;
   order: number;
-  section_id: number;
-  created_at: string;
+  created_at: ISODate;
+  course_id: number;
+};
+
+export type ContentLesson = {
+  id: number;
+  title: string;
+  content_type: "video" | "article" | "mixed";
+  order: number;
   is_preview: boolean;
-  can_access?: boolean;
-};*/
+  created_at: ISODate;
+  section_id: number;
+};
+
+export type LessonContent = {
+  id: number;
+  video_url?: string | null;
+  article_text?: string | null;
+  article_pdf?: string | null;
+  lesson_id: number;
+};

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { getMySubscriptions, startCheckout, cancelSubscription, resumeSubscription } from "../services/subscriptions.api";
+import { useNavigate } from "react-router-dom";
+import { getMySubscriptions, startCheckout, cancelSubscription, resumeSubscription, } from "../services/subscriptions.api";
 import type { SubscriptionStatus } from "../types";
 import PlanCard from "../components/PlanCard";
 
 export default function Subscriptions() {
+  const navigate = useNavigate();
   const [subs, setSubs] = useState<SubscriptionStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -26,7 +28,9 @@ export default function Subscriptions() {
   }, []);
 
   const handleSubscribe = async (course_id: number) => {
-    const existingSub = subs.find(s => s.course_id === course_id && s.status === "active");
+    const existingSub = subs.find(
+      (s) => s.course_id === course_id && s.status === "active"
+    );
     if (existingSub) {
       alert("You are already subscribed to this course!");
       return;
@@ -42,7 +46,6 @@ export default function Subscriptions() {
       setBusyKey(null);
     }
   };
-
 
   const handleCancel = async (id: number) => {
     try {
@@ -83,20 +86,27 @@ export default function Subscriptions() {
   }
 
   return (
-    <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+    <div
+      style={{
+        display: "grid",
+        gap: 12,
+        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+      }}
+    >
       {subs.map((s) => {
         const name = s.course_title || `Course ID: ${s.course_id}`;
         const priceLabel = "—";
         const features: string[] = [
           `Status: ${s.status}`,
           `Start Date: ${new Date(s.start_date).toLocaleDateString()}`,
-          ...(s.end_date ? [`End Date: ${new Date(s.end_date).toLocaleDateString()}`] : []),
+          ...(s.end_date
+            ? [`End Date: ${new Date(s.end_date).toLocaleDateString()}`]
+            : []),
           `Course ID: ${s.course_id}`,
         ];
 
         const isActive = s.status === "active" || s.status === "in_progress";
         const isCancelled = s.status === "cancelled" || s.status === "expired";
-        // const canAccess = s.can_access_content;
 
         let primaryLabel = "";
         let onPrimary: () => void = () => { };
@@ -105,7 +115,8 @@ export default function Subscriptions() {
 
         if (isActive) {
           primaryLabel = "Go to content";
-          onPrimary = () => window.location.href = `/courses/${s.course_id}/content`;
+          onPrimary = () =>
+            navigate(`/course_content/sections/${s.course_id}`);
           secondaryLabel = "Unsubscribe";
           onSecondary = () => handleCancel(s.id);
         } else if (isCancelled) {
@@ -117,7 +128,6 @@ export default function Subscriptions() {
         }
 
         const disabled = busyKey === s.id || busyKey === s.course_id;
-
 
         return (
           <PlanCard
