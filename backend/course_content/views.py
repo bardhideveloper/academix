@@ -2,33 +2,105 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import Lesson, Section
-from .serializers import LessonSerializer
-from courses.models import Course
+
+from subscriptions.models import Subscription
+from .models import (
+    CourseContentSection,
+    CourseContentLesson,
+    CourseContentLessonContent,
+)
+from .serializers import (
+    CourseContentSectionSerializer,
+    CourseContentLessonSerializer,
+    CourseContentLessonContentSerializer,
+)
+
+
+# --------------------------------------------------
+# Helpers
+# --------------------------------------------------
+
+def user_has_course_access(user, course_id: int) -> bool:
+    """
+    User must have an active or in-progress subscription
+    to access course content.
+    """
+    return Subscription.objects.filter(
+        user=user,
+        course_id=course_id,
+        status__in=["active", "in_progress"],
+    ).exists()
+
+
+# --------------------------------------------------
+# Views
+# --------------------------------------------------
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def lesson_detail_api(request, lesson_id: int):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    course = lesson.section.course
-    if not course.user_has_access(request.user):
-        return Response({"detail": "Access denied."}, status=403)
-    serializer = LessonSerializer(lesson)
+def course_sections(request, course_id):
+    """
+    Return all sections for a course
+    """
+    if not user_has_course_access(request.user, course_id):
+        return Response(
+            {"detail": "You do not have access to this course"},
+            status=403,
+        )
+
+    sections = CourseContentSection.objects.filter(
+        course_id=course_id
+    ).order_by("order")
+
+    serializer = CourseContentSectionSerializer(sections, many=True)
     return Response(serializer.data)
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def course_lessons(request, course_id: int):
-    course = get_object_or_404(Course, id=course_id)
-    if not course.user_has_access(request.user):
-        return Response({"detail": "Access denied."}, status=403)
-    lessons = Lesson.objects.filter(section__course=course).order_by("section__order", "order")
-    serializer = LessonSerializer(lessons, many=True)
-    return Response(serializer.data)
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def lessons_by_course(request, course_id):
-    lessons = Lesson.objects.filter(section__course_id=course_id).order_by("section__order", "order")
-    serializer = LessonSerializer(lessons, many=True, context={"request": request})
+def section_lessons(request, section_id):
+    """
+    Return all lessons for a section
+    """
+    section = get_object_or_404(CourseContentSection, id=section_id)
+
+    # Ensure user can access the parent course
+    if not user_has_course_access(request.user, section.course_id):
+        return Response(
+            {"detail": "You do not have access to this course"},
+            status=403,
+        )
+
+    lessons = CourseContentLesson.objects.filter(
+        section=section
+    ).order_by("order")
+
+    serializer = CourseContentLessonSerializer(lessons, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def lesson_content(request, lesson_id):
+    """
+    Return content for a lesson.
+    Preview lessons are accessible without subscription.
+    """
+    lesson = get_object_or_404(CourseContentLesson, id=lesson_id)
+
+    # If lesson is NOT preview, require subscription
+    if not lesson.is_preview:
+        course_id = lesson.section.course_id
+        if not user_has_course_access(request.user, course_id):
+            return Response(
+                {"detail": "You do not have access to this lesson"},
+                status=403,
+            )
+
+    content = get_object_or_404(
+        CourseContentLessonContent,
+        lesson=lesson,
+    )
+
+    serializer = CourseContentLessonContentSerializer(content)
     return Response(serializer.data)

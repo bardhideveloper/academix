@@ -1,56 +1,71 @@
 from django.db import models
 from courses.models import Course
 
-class Section(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="sections")
-    title = models.CharField(max_length=255)
-    order = models.PositiveIntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ["order"]
-        unique_together = ("course", "order")
-
-    def __str__(self):
-        return f"{self.course.title} | {self.title}"
-
-
-class Lesson(models.Model):
-    CONTENT_TYPE_CHOICES = (
-        ("video", "Video"),
-        ("pdf", "PDF"),
-        ("article", "Article"),
+class CourseContentSection(models.Model):
+    id = models.AutoField(primary_key=True)
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="content_sections"
     )
-    section = models.ForeignKey(Section, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=255)
-    content_type = models.CharField(max_length=10, choices=CONTENT_TYPE_CHOICES)
-    order = models.PositiveIntegerField()
-    is_preview = models.BooleanField(default=False)
+    order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        db_table = "course_content_section"
         ordering = ["order"]
-        unique_together = ("section", "order")
 
     def __str__(self):
         return self.title
 
 
-class LessonContent(models.Model):
-    lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, related_name="content")
-    video_url = models.URLField(blank=True, null=True)
-    article_text = models.TextField(blank=True, null=True)
-    pdf_file = models.FileField(upload_to="lessons/pdfs/", blank=True, null=True)
+class CourseContentLesson(models.Model):
+    id = models.AutoField(primary_key=True)
+    section = models.ForeignKey(
+        CourseContentSection,
+        on_delete=models.CASCADE,
+        related_name="lessons"
+    )
+    title = models.CharField(max_length=255)
+    content_type = models.CharField(
+        max_length=50,
+        choices=[
+            ("video", "Video"),
+            ("article", "Article"),
+            ("mixed", "Mixed"),
+        ]
+    )
+    order = models.IntegerField(default=0)
+    is_preview = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def clean(self):
-        from django.core.exceptions import ValidationError
-
-        if self.lesson.content_type == "video" and not self.video_url:
-            raise ValidationError("Video lesson must have a video URL.")
-        if self.lesson.content_type == "pdf" and not self.pdf_file:
-            raise ValidationError("PDF lesson must have a PDF file.")
-        if self.lesson.content_type == "article" and not self.article_text:
-            raise ValidationError("Article lesson must have article text.")
+    class Meta:
+        db_table = "course_content_lesson" 
+        ordering = ["order"]
 
     def __str__(self):
-        return f"Content for: {self.lesson.title}"
+        return self.title
+
+
+class CourseContentLessonContent(models.Model):
+    id = models.AutoField(primary_key=True)
+    lesson = models.OneToOneField(
+        CourseContentLesson,
+        on_delete=models.CASCADE,
+        related_name="content"
+    )
+    video_url = models.URLField(blank=True, null=True)
+    article_text = models.TextField(blank=True, null=True)
+    article_pdf = models.FileField(
+        upload_to="lesson_pdfs/",
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        db_table = "course_content_lessoncontent"
+
+    def __str__(self):
+        return f"Content for {self.lesson.title}"

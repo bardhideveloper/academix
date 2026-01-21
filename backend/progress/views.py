@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import CourseProgress
 from .serializers import CourseProgressSerializer
 from courses.models import Course
-from course_content.models import Lesson
+# from course_content.models import Lesson
 
 
 @api_view(["GET"])
