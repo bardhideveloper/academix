@@ -30,10 +30,8 @@ class SubscribeView(APIView):
         if not course_id:
             return Response({"error": "course_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Merr kursin nga DB ose kthen 404 nëse nuk ekziston
         course = get_object_or_404(Course, id=course_id)
 
-        # Krijo subscription ose merr ekzistuesin
         subscription, created = Subscription.objects.get_or_create(user=request.user, course=course)
 
         serializer = SubscriptionSerializer(subscription)

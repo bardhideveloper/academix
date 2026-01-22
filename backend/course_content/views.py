@@ -15,11 +15,6 @@ from .serializers import (
     CourseContentLessonContentSerializer,
 )
 
-
-# --------------------------------------------------
-# Helpers
-# --------------------------------------------------
-
 def user_has_course_access(user, course_id: int) -> bool:
     """
     User must have an active or in-progress subscription
@@ -31,17 +26,10 @@ def user_has_course_access(user, course_id: int) -> bool:
         status__in=["active", "in_progress"],
     ).exists()
 
-
-# --------------------------------------------------
-# Views
-# --------------------------------------------------
-
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def course_sections(request, course_id):
-    """
-    Return all sections for a course
-    """
+  
     if not user_has_course_access(request.user, course_id):
         return Response(
             {"detail": "You do not have access to this course"},
@@ -59,12 +47,9 @@ def course_sections(request, course_id):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def section_lessons(request, section_id):
-    """
-    Return all lessons for a section
-    """
+
     section = get_object_or_404(CourseContentSection, id=section_id)
 
-    # Ensure user can access the parent course
     if not user_has_course_access(request.user, section.course_id):
         return Response(
             {"detail": "You do not have access to this course"},
@@ -82,13 +67,9 @@ def section_lessons(request, section_id):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def lesson_content(request, lesson_id):
-    """
-    Return content for a lesson.
-    Preview lessons are accessible without subscription.
-    """
+
     lesson = get_object_or_404(CourseContentLesson, id=lesson_id)
 
-    # If lesson is NOT preview, require subscription
     if not lesson.is_preview:
         course_id = lesson.section.course_id
         if not user_has_course_access(request.user, course_id):

@@ -6,7 +6,6 @@ from inactive_users.models import InactiveUserLog
 
 @shared_task
 def detect_inactive_users():
-    # Merr vetëm 1 user dhe 1 course për test
     user = User.objects.first()
     course = Course.objects.first()
 
@@ -17,7 +16,7 @@ def detect_inactive_users():
     log = InactiveUserLog.objects.create(
         user=user,
         course=course,
-        detected_at=timezone.now()  # Vendos një datetime për test
+        detected_at=timezone.now() 
     )
 
     print(f"InactiveUserLog i krijuar: user={user.id}, course={course.id}")
