@@ -1,5 +1,12 @@
+
+// src/features/notifications/components/NotificationsBell.tsx
 import { useEffect, useRef, useState } from "react";
-import { listNotifications, markNotificationRead, markAllNotificationsRead } from "../services/notifications.api";
+import {
+  listNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
+  getUnreadCount
+} from "../services/notifications.api";
 import type { NotificationItem } from "../types";
 import "./NotificationsBell.css";
 
@@ -7,35 +14,41 @@ export default function NotificationsBell() {
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [badge, setBadge] = useState<number>(0);
   const intervalRef = useRef<number | null>(null);
 
-  const unread = items.filter((a) => !a.read).length;
+  const unread = items.filter(a => !a.read).length;
 
-  const fetchNoticiations = async () => {
+  const fetchNotifications = async () => {
     try {
       const data = await listNotifications();
-
-      const normalized = data.map((n) => ({
-        ...n,
-        read: n.status === "read",
-      }));
-
+      const normalized = data.map(n => ({ ...n, read: n.status === "read" }));
       setItems(normalized);
+      setBadge(normalized.filter(n => !n.read).length);
     } finally {
       setLoading(false);
     }
   };
 
+  const pollUnread = async () => {
+    try {
+      const count = await getUnreadCount();
+      setBadge(count);
+    } catch {
+      // ignore network blips
+    }
+  };
 
   useEffect(() => {
-    fetchNoticiations();
+    // initial fetch
+    fetchNotifications();
 
     const startPolling = () => {
       stopPolling();
       intervalRef.current = window.setInterval(() => {
-        if (document.hidden) return
-        if (open) return;
-        fetchNoticiations();
+        if (document.hidden) return;
+        if (open) return;         // no need to poll while open
+        pollUnread();             // poll the tiny endpoint
       }, 30_000);
     };
     const stopPolling = () => {
@@ -49,26 +62,36 @@ export default function NotificationsBell() {
     return () => stopPolling();
   }, [open]);
 
-  const onToggle = () => setOpen((o) => !o);
+  const onToggle = () => {
+    const willOpen = !open;
+    setOpen(willOpen);
+    // fetch fresh list on open
+    if (!open) {
+      setLoading(true);
+      fetchNotifications();
+    }
+  };
 
   const onMarkRead = async (id: number) => {
-    setItems((prev) =>
-      prev.map((a) =>
-        a.id === id ? { ...a, read: true, status: "read" } : a
-      )
+    setItems(prev =>
+      prev.map(a => (a.id === id ? { ...a, read: true, status: "read" } : a))
     );
+    setBadge(b => Math.max(0, b - 1));
     try {
       await markNotificationRead(id);
-    } catch { }
+    } catch {
+      // optional: revert on failure
+    }
   };
 
   const onMarkAll = async () => {
-    setItems((prev) =>
-      prev.map((a) => ({ ...a, read: true, status: "read" }))
-    );
+    setItems(prev => prev.map(a => ({ ...a, read: true, status: "read" })));
+    setBadge(0);
     try {
       await markAllNotificationsRead();
-    } catch { }
+    } catch {
+      // optional: refetch on failure
+    }
   };
 
   return (
@@ -80,14 +103,12 @@ export default function NotificationsBell() {
         onClick={onToggle}
       >
         <span className="ax-notifications__bell" aria-hidden="true">🔔</span>
-        {unread > 0 && <span className="ax-notifications__badge">{unread}</span>}
+        {(badge > 0) && <span className="ax-notifications__badge">{badge}</span>}
       </button>
 
       {open && (
         <div className="ax-notifications__panel" role="dialog" aria-label="Notifications">
-          {/* caret triangle */}
           <span className="ax-notifications__caret" aria-hidden="true" />
-
           <div className="ax-notifications__header">
             <span className="ax-notifications__title">Notifications</span>
             <button className="ax-notifications__action" onClick={onMarkAll}>
@@ -108,7 +129,7 @@ export default function NotificationsBell() {
               </div>
             ) : (
               <ul className="ax-notifications__list">
-                {items.map((a) => (
+                {items.map(a => (
                   <li key={a.id} className={`ax-notifications__item ${a.read ? "is-read" : "is-unread"}`}>
                     <div className="ax-notifications__line">
                       <span className={`ax-notifications__badge-type ax-${a.type}`}>{labelForType(a.type)}</span>
