@@ -9,8 +9,13 @@ from .serializers import NotificationSerializer
 @permission_classes([IsAuthenticated])
 def list_notifications(request):
     notifications = Notification.objects.filter(user=request.user).order_by("-created_at")
-    serializer = NotificationSerializer(notifications, many=True)
-    return Response(serializer.data)
+
+    data = []
+    for n in notifications:
+        strategy = NotificationStrategyFactory.get_strategy(n.type)
+        data.append(strategy.serialize(n))
+
+    return Response(data)
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
