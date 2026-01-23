@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from course_content.factories.content_strategy_factory import LessonContentStrategyFactory
 
 from subscriptions.models import Subscription
 from .models import (
@@ -71,17 +72,13 @@ def lesson_content(request, lesson_id):
     lesson = get_object_or_404(CourseContentLesson, id=lesson_id)
 
     if not lesson.is_preview:
-        course_id = lesson.section.course_id
-        if not user_has_course_access(request.user, course_id):
-            return Response(
-                {"detail": "You do not have access to this lesson"},
-                status=403,
-            )
+        if not user_has_course_access(request.user, lesson.section.course_id):
+            return Response({"detail": "You do not have access to this lesson"}, status=403)
 
-    content = get_object_or_404(
-        CourseContentLessonContent,
-        lesson=lesson,
-    )
+    content = get_object_or_404(CourseContentLessonContent, lesson=lesson)
+    # Advanced OOP integration
+    strategy = LessonContentStrategyFactory.get_strategy(lesson.content_type)
+    data = strategy.serialize(lesson, content)
 
-    serializer = CourseContentLessonContentSerializer(content)
-    return Response(serializer.data)
+    return Response(data)
+
